@@ -19,7 +19,6 @@ services:
       - .:/myapp
       - public-data:/myapp/public
       - tmp-data:/myapp/tmp
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s"
     environment:
       TZ: Asia/Tokyo
       RAILS_ENV: development
