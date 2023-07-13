@@ -1,7 +1,7 @@
 name: CI
 
 on:
-  push:
+  pull_request:
 
 jobs:
   rspec:
@@ -71,7 +71,7 @@ jobs:
       - name: Run rubocop with reviewdog
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bundle exec rubocop --parallel | reviewdog -reporter=github-pr-review -f=rubocop -filter-mode=nofilter -fail-on-error
+        run: bundle exec rubocop | reviewdog -reporter=github-pr-review -f=rubocop -filter-mode=nofilter -fail-on-error
 
   brakeman:
     runs-on: ubuntu-latest

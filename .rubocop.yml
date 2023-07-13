@@ -5,8 +5,6 @@ require:
   - rubocop-performance
   - rubocop-rails
   - rubocop-rspec
-  - rubocop-capybara
-  - rubocop-factory_bot
   - test_prof/rubocop
   - ./lib/medpeer_cop
   - ./lib/patches/rubocop_security_yaml_load_check_psych_version.rb
