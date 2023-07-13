@@ -10,7 +10,6 @@ services:
       - mysql-data:/var/lib/mysql
     ports:
       - 3306:3306
-    platform: linux/x86_64/v8
   rails:
     build:
       context: .

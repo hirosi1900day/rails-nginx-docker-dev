@@ -1,0 +1,192 @@
+inherit_from: .rubocop_todo.yml
+
+require:
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 2.7.8
+  Exclude:
+    - "vendor/**/*"
+    - "db/*"
+    - "config/**/*"
+    - "bin/*"
+    - "config.ru"
+    - "one_shot_script/**/*"
+    - "Gemfile"
+  DisplayCopNames: true
+  NewCops: enable
+
+Rails/UnknownEnv:
+  Environments:
+    - production
+    - development
+    - test
+    - staging
+
+# inverse_of指定不要
+Rails/InverseOf:
+  Enabled: false
+
+# クラスコメント不要
+Style/Documentation:
+  Enabled: false
+
+# module,classを1行で書く
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# zero?等で比較しなくてもよい(==0でいい)
+Style/NumericPredicate:
+  Enabled: false
+
+# case/if どっちでもよい
+Style/CaseLikeIf:
+  Enabled: false
+
+# update_attribute利用可
+Rails/SkipsModelValidations:
+  Enabled: false
+
+# 変数名+数字(foo1)を許可
+Naming/VariableNumber:
+  Enabled: false
+
+# where().exists?もexists?()も可
+Rails/WhereExists:
+  Enabled: false
+
+# []でもアクセス可
+Style/SingleArgumentDig:
+  Enabled: false
+
+# openstruct利用可
+Style/OpenStructUse:
+  Enabled: false
+
+# let!利用可
+RSpec/LetSetup:
+  Enabled: false
+
+# letが多くなるケースもあるため
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
+
+# 日本語を利用するため
+RSpec/ContextWording:
+  Enabled: false
+
+# グループ階層3だと少ないため
+RSpec/NestedGroups:
+  Max: 5
+
+# find_by_という関数を個別で定義しているため
+Rails/DynamicFindBy:
+  Enabled: false
+
+# 数値3桁区切り不要
+Style/NumericLiterals:
+  Enabled: false
+
+# itの行数 10行くらいに(前準備はletとbeforeで)
+# RSpec/ExampleLength:
+#   Max: 10
+
+# module行数 100程度を目指す
+# Metrics/ModuleLength:
+#   Max: 100
+
+# 引数の数 8くらいに
+# Metrics/ParameterLists:
+#   Max: 8
+
+# case文の複雑さ 10程度を目指す
+# Metrics/PerceivedComplexity:
+#   Max: 10
+
+# ループや分岐の複雑さ 10程度を目指す
+# Metrics/CyclomaticComplexity:
+#   Max: 10
+
+# 関数呼び出しとか制御構造の複雑さ せめて30を目指す
+# Metrics/AbcSize:
+#   Max: 30
+
+# Maxは25程度を目指す
+# Metrics/BlockLength:
+#   Max: 25
+
+# TODO: 以下は要改善
+
+# TODO: 1行の長さ 120程度を目指す
+# Layout/LineLength:
+#   Max: 120
+
+# TODO: メソッド行数 40程度を目指す
+# Metrics/MethodLength:
+#   Max: 40
+
+# TODO: クラス行数 120程度を目指す
+# Metrics/ClassLength:
+#   Max: 120
+
+# frozen_string_literal: true を指定するようにする
+# Style/FrozenStringLiteralComment:
+#   Enabled: false
+
+# 定数freeze trueにする
+# Style/MutableConstant:
+#   Enabled: false
+
+# 早期リターンなど trueにする
+# Style/GuardClause:
+#   Enabled: false
+
+# symbol procで書くように trueにする
+# Style/SymbolProc:
+#   Enabled: false
+
+# 厳密比較 true(==でよい)にする
+# Style/CaseEquality:
+#   Enabled: false
+
+# dependent指定 trueにする
+# Rails/HasManyOrHasOneDependent:
+#   Enabled: false
+
+# 定数は大文字で trueにする
+# Naming/ConstantName:
+#   Enabled: false
+
+# ブロック内外で同じ変数名を使わないように trueにする
+# Lint/ShadowingOuterLocalVariable:
+#   Enabled: false
+
+# get_, set_のメソッドを作らない trueにする
+# Naming/AccessorMethodName:
+#   Enabled: false
+
+# superの引数とあってないのでtrueにする
+# Lint/MissingSuper:
+#   Enabled: false
+
+# JSON.parseを使うように trueにする
+# Security/JSONLoad:
+#   Enabled: false
+
+# described_classを使うように trueにする
+# RSpec/DescribedClass:
+#   Enabled: false
+
+# aggregate_failuresを使うように trueにする
+# RSpec/MultipleExpectations:
+#   Enabled: false
+
+# letを使うように trueにする
+# RSpec/InstanceVariable:
+#   Enabled: false
+
+# request specのファイル名を_controller_spec.rbに変える
+# RSpec/FilePath:
+#   Enabled: false
