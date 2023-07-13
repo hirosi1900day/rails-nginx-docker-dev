@@ -1,192 +1,361 @@
 inherit_from: .rubocop_todo.yml
 
+# This file overrides https://github.com/bbatsov/rubocop/blob/master/config/default.yml
 require:
   - rubocop-performance
   - rubocop-rails
   - rubocop-rspec
+  - rubocop-capybara
+  - rubocop-factory_bot
+  - test_prof/rubocop
+  - ./lib/medpeer_cop
+  - ./lib/patches/rubocop_security_yaml_load_check_psych_version.rb
+
+inherit_mode:
+  merge:
+    - Exclude
 
 AllCops:
-  TargetRubyVersion: 2.7.8
   Exclude:
-    - "vendor/**/*"
-    - "db/*"
-    - "config/**/*"
-    - "bin/*"
-    - "config.ru"
-    - "one_shot_script/**/*"
-    - "Gemfile"
-  DisplayCopNames: true
-  NewCops: enable
+    - 'db/*_schema.rb'
+    - 'db/*migrate/*'
+    - 'config/initializers/sorcery.rb'
+    # rails本体のI18n定義そのものなのでチェック対象外にする
+    - 'config/locales/ja.rb'
+  NewCops: disable
 
-Rails/UnknownEnv:
-  Environments:
-    - production
-    - development
-    - test
-    - staging
-
-# inverse_of指定不要
-Rails/InverseOf:
+# Align the elements of an array literal if they span more than one line
+Layout/ArrayAlignment:
   Enabled: false
 
-# クラスコメント不要
-Style/Documentation:
+Layout/HashAlignment:
   Enabled: false
 
-# module,classを1行で書く
+Layout/FirstArrayElementIndentation:
+  Exclude:
+    - 'db/fixtures/**/*'
+
+Layout/EmptyLineAfterMagicComment:
+  Include:
+    - 'app/**/channel/**/*'
+    - 'app/**/icc/**/*'
+    - 'config/routes/*'
+    - 'spec/**/*.rb'
+
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: false
+
+Layout/EmptyLinesAroundExceptionHandlingKeywords:
+  Enabled: false
+
+Layout/HeredocIndentation:
+  Enabled: false
+
+# Checks indentation of method calls with the dot operator
+# that span more than one line
+Layout/MultilineMethodCallIndentation:
+  Enabled: false
+
+# Checks indentation of binary operations that span more than one line
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: false
+
+# Align ends corresponding to defs correctly
+# http://www.rubydoc.info/github/bbatsov/rubocop/master/Rubocop/Cop/Lint/EndAlignment
+# keyword = if true
+#           end
+# variable = if true
+# end
+Layout/EndAlignment:
+  EnforcedStyleAlignWith: variable
+
+Lint/MixedRegexpCaptureTypes:
+  Enabled: false
+
+Lint/RaiseException:
+  Enabled: false
+
+Lint/StructNewOverride:
+  Enabled: false
+
+# 空のrescue節をチェック
+# https://rubocop.readthedocs.io/en/latest/cops_lint/#lintsuppressedexception
+Lint/SuppressedException:
+  Enabled: false
+
+# Checks that ABC (Assignment Branch Condition) size is not higher than the configured maximum
+Metrics/AbcSize:
+  # デフォルトの15は厳しすぎるので緩めている。25は守りたい
+  Max: 25
+  Exclude:
+    - 'app/controllers/concerns/authenticatable.rb'
+
+# Avoid long blocks with many lines
+Metrics/BlockLength:
+  # ファイル丸ごとブロックに入りそうなファイルは行数制限から外す
+  Exclude:
+    - "**/*_spec.rb"
+    - "**/*.rake"
+    - "**/*.json.jbuilder"
+    - 'db/fixtures/**/*'
+    - 'spec/factories/**/*.rb'
+    - "spec/support/*.rb"
+    - "spec/rails_helper.rb"
+    - "config/environments/*.rb"
+    - "config/routes.rb"
+    - "config/routes/*.rb"
+
+# Avoid classes longer than some maximum lines of code
+Metrics/ClassLength:
+  Max: 300
+
+# Limit lines to some maximum characters
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'spec/**/*.rb'
+    # テストデータ用のコードは横に長くなりがちなのでチェック対象外
+    - 'db/fixtures/**/*'
+
+# Avoid methods longer than some maximum lines of code
+Metrics/MethodLength:
+  Max: 20
+
+# Avoid modules longer than some maximum lines of code
+Metrics/ModuleLength:
+  Max: 300
+
+# has_ から始まるメソッドは許可する
+Naming/PredicateName:
+  ForbiddenPrefixes:
+    - "is_"
+    - "have_"
+  NamePrefix:
+    - "is_"
+    - "have_"
+
+# 3 文字未満だと指摘されるが、未使用を示す _ や e(rror), b(lock),
+# n(umber) といった 1 文字変数は頻出するし、前置詞(by, to, ...)や
+# よく知られた省略語 (op: operator とか pk: primary key とか) も妥当。
+# 変数 s にどんな文字列かを形容したい場合と、不要な場合とがある＝無効
+Naming/MethodParameterName:
+  Enabled: false
+
+# Use only ascii symbols in comments
+Style/AsciiComments:
+  Enabled: false
+
+# Avoid using {...} for multi-line blocks (multiline chaining is always ugly).
+# Prefer {...} over do...end for single-line blocks
+Style/BlockDelimiters:
+  Enabled: false
+
+# Checks style of children classes and modules
 Style/ClassAndModuleChildren:
   Enabled: false
 
-# zero?等で比較しなくてもよい(==0でいい)
-Style/NumericPredicate:
+# Enforces consistent use of `Object#is_a?` or `Object#kind_of?`
+Style/ClassCheck:
   Enabled: false
 
-# case/if どっちでもよい
-Style/CaseLikeIf:
+# Checks for uses of unidiomatic method names from the Enumerable module
+Style/CollectionMethods:
+  Enabled: true
+  PreferredMethods:
+    collect: 'map'
+    collect!: 'map!'
+    inject: false
+    detect: false
+    find_all: false
+
+# Document classes and non-namespace modules
+Style/Documentation:
   Enabled: false
 
-# update_attribute利用可
-Rails/SkipsModelValidations:
+Style/DoubleNegation:
   Enabled: false
 
-# 変数名+数字(foo1)を許可
-Naming/VariableNumber:
+Style/ExponentialNotation:
   Enabled: false
 
-# where().exists?もexists?()も可
-Rails/WhereExists:
+# This cop is designed to help upgrade to Ruby 3.0.
+# It will add the comment `# frozen_string_literal: true` to enable frozen string literals
+Style/FrozenStringLiteralComment:
+  Include:
+    - 'app/**/channel/**/*'
+    - 'app/**/icc/**/*'
+    - 'config/routes/*'
+    - 'spec/**/*'
+
+# Favor modifier if/unless usage when you have a single-line body.
+Style/IfUnlessModifier:
   Enabled: false
 
-# []でもアクセス可
-Style/SingleArgumentDig:
+# Checks for uses of the lambda literal syntax for single line lambdas,
+# and the method call syntax for multiline lambdas
+Style/Lambda:
+  # Scopeは複数行でも`-> { }`形式で揃えた方が見た目が綺麗だが、
+  # その他のケースでは`lambda do-end`を使ったほうが見やすい時もあるので。
   Enabled: false
 
-# openstruct利用可
-Style/OpenStructUse:
+Style/RedundantFetchBlock:
   Enabled: false
 
-# let!利用可
-RSpec/LetSetup:
+Style/RedundantRegexpCharacterClass:
   Enabled: false
 
-# letが多くなるケースもあるため
-RSpec/MultipleMemoizedHelpers:
-  Max: 10
-
-# 日本語を利用するため
-RSpec/ContextWording:
+Style/RedundantRegexpEscape:
   Enabled: false
 
-# グループ階層3だと少ないため
-RSpec/NestedGroups:
-  Max: 5
+# %記法の囲い文字チェック
+# http://www.rubydoc.info/gems/rubocop/RuboCop/Cop/Style/PercentLiteralDelimiters
+# cf.) http://qiita.com/tbpgr/items/abebdab1b524be2ef9f4
+Style/PercentLiteralDelimiters:
+  Enabled: false
 
-# find_by_という関数を個別で定義しているため
+Style/SlicingWithRange:
+  Enabled: false
+
+# Checks for proper usage of fail and raise
+Style/SignalException:
+  Enabled: false
+
+# Enforces the names of some block params
+Style/SingleLineBlockParams:
+  Enabled: false
+
+# Checks if uses of quotes match the configured preference
+Style/StringLiterals:
+  Enabled: false
+
+# Prefer `to_sym` over `intern`
+Style/StringMethods:
+  PreferredMethods:
+    intern: to_sym
+  Enabled: true
+
+Style/SymbolArray:
+  Enabled: false
+
+# Checks for trailing comma in array and hash literals
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+
+# 文字列の配列を %w() で書いているか
+# http://www.rubydoc.info/github/bbatsov/rubocop/Rubocop/Cop/Style/WordArray
+Style/WordArray:
+  Enabled: false
+
+# Checks for use of parentheses around ternary conditions.
+Style/TernaryParentheses:
+  Enabled: false
+
+# NOTE: Ruby 3.1で`hash value omission`が追加されたが、
+# 既存コードへの影響が大きいので旧来の書き方も許容するように調整
+Style/HashSyntax:
+  EnforcedShorthandSyntax: either
+
 Rails/DynamicFindBy:
+  Whitelist:
+    - find_by_sql
+    - find_by_obfuscated_id
+    - find_by_obfuscated_id!
+    - find_by_hashid
+    - find_by_hashid!
+
+Rails/LinkToBlank:
   Enabled: false
 
-# 数値3桁区切り不要
-Style/NumericLiterals:
+Rails/Present:
   Enabled: false
 
-# itの行数 10行くらいに(前準備はletとbeforeで)
-# RSpec/ExampleLength:
-#   Max: 10
+Rails/OutputSafety:
+  Enabled: false
 
-# module行数 100程度を目指す
-# Metrics/ModuleLength:
-#   Max: 100
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - test
+    - production
+    - staging
 
-# 引数の数 8くらいに
-# Metrics/ParameterLists:
-#   Max: 8
+RSpec/AggregateExamples:
+  AddAggregateFailuresMetadata: false
+  Include:
+    - 'spec/system/admin/**/*_spec.rb'
 
-# case文の複雑さ 10程度を目指す
-# Metrics/PerceivedComplexity:
-#   Max: 10
+Rails/ApplicationController:
+  Exclude:
+    # テストで使うダミー用のコントローラなので対象外にする
+    - 'spec/support/dummies_controller.rb'
+    - 'spec/support/test_sessions_controller.rb'
 
-# ループや分岐の複雑さ 10程度を目指す
-# Metrics/CyclomaticComplexity:
-#   Max: 10
+Rails/RakeEnvironment:
+  Exclude:
+    - 'lib/tasks/auto_annotate_models.rake'
+    - 'lib/tasks/coverage_report.rake'
 
-# 関数呼び出しとか制御構造の複雑さ せめて30を目指す
-# Metrics/AbcSize:
-#   Max: 30
+Style/FormatStringToken:
+  AllowedMethods:
+    - redirect
 
-# Maxは25程度を目指す
-# Metrics/BlockLength:
-#   Max: 25
+Style/HashEachMethods:
+  Enabled: true
 
-# TODO: 以下は要改善
+Style/HashTransformKeys:
+  Enabled: true
 
-# TODO: 1行の長さ 120程度を目指す
-# Layout/LineLength:
-#   Max: 120
+Style/HashTransformValues:
+  Enabled: true
+  Exclude:
+    - 'app/models/admin/lounge/theme_search_form.rb'
+    - 'app/models/admin/search_form.rb'
+    - 'app/models/conference/watch_log/generator.rb'
 
-# TODO: メソッド行数 40程度を目指す
-# Metrics/MethodLength:
-#   Max: 40
+# feature というカラム名がテストケースだと誤検知されrubocopに引っかかるので exclude している
+RSpec/EmptyExampleGroup:
+  Exclude:
+    - 'spec/factories/**/*'
+RSpec/MissingExampleGroupArgument:
+  Exclude:
+    - 'spec/factories/**/*'
 
-# TODO: クラス行数 120程度を目指す
-# Metrics/ClassLength:
-#   Max: 120
+RSpec/Pending:
+  Enabled: true
 
-# frozen_string_literal: true を指定するようにする
-# Style/FrozenStringLiteralComment:
-#   Enabled: false
+# TODO: Rails 6のアップグレードとは別で対応したいので一旦無効にする。
+Rails/IndexWith:
+  Enabled: false
 
-# 定数freeze trueにする
-# Style/MutableConstant:
-#   Enabled: false
+Performance/MapCompact:
+  Enabled: true
 
-# 早期リターンなど trueにする
-# Style/GuardClause:
-#   Enabled: false
+# 該当アクションを定義している親クラスを継承しており、コントローラで同一のアクション再定義する必要がないため
+Rails/LexicallyScopedActionFilter:
+  Exclude:
+    - "app/controllers/admin/**/*_controller.rb"
 
-# symbol procで書くように trueにする
-# Style/SymbolProc:
-#   Enabled: false
+RSpec/MatchArray:
+  Enabled: false
 
-# 厳密比較 true(==でよい)にする
-# Style/CaseEquality:
-#   Enabled: false
+RSpec/ContainExactly:
+  Enabled: false
 
-# dependent指定 trueにする
-# Rails/HasManyOrHasOneDependent:
-#   Enabled: false
-
-# 定数は大文字で trueにする
-# Naming/ConstantName:
-#   Enabled: false
-
-# ブロック内外で同じ変数名を使わないように trueにする
-# Lint/ShadowingOuterLocalVariable:
-#   Enabled: false
-
-# get_, set_のメソッドを作らない trueにする
-# Naming/AccessorMethodName:
-#   Enabled: false
-
-# superの引数とあってないのでtrueにする
-# Lint/MissingSuper:
-#   Enabled: false
-
-# JSON.parseを使うように trueにする
-# Security/JSONLoad:
-#   Enabled: false
-
-# described_classを使うように trueにする
-# RSpec/DescribedClass:
-#   Enabled: false
-
-# aggregate_failuresを使うように trueにする
-# RSpec/MultipleExpectations:
-#   Enabled: false
-
-# letを使うように trueにする
-# RSpec/InstanceVariable:
-#   Enabled: false
-
-# request specのファイル名を_controller_spec.rbに変える
-# RSpec/FilePath:
-#   Enabled: false
+# `InverseMethods` are methods that can be inverted by a not (`not` or `!`)
+Style/InverseMethods:
+  InverseMethods:
+    :present?: :blank?
+    :include?: :exclude?
+    :valid?: :invalid?
