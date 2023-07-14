@@ -35,5 +35,4 @@ jobs:
         GIT_PR_RELEASE_LABELS: "Waiting for Approve"
       run: |
         gem install --no-document git-pr-release -v "2.1.2"
-        git remote set-url origin "https://${GITHUB_ACTOR}:${GIT_PR_RELEASE_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
         git-pr-release --no-fetch || echo "Done."
