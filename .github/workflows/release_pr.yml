@@ -32,6 +32,6 @@ jobs:
         GIT_PR_RELEASE_TEMPLATE: .github/.git-pr-template
         GIT_PR_RELEASE_LABELS: "Waiting for Approve"
       run: |
-        gem install faraday-retry
-        gem install --no-document git-pr-release -v "2.1.2"
-        git-pr-release --no-fetch || echo "Done."
+        gem install git-pr-release -v "0.6.0"
+        git remote set-url origin "https://${GITHUB_ACTOR}:${GIT_PR_RELEASE_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        git-pr-release || echo "Done."
