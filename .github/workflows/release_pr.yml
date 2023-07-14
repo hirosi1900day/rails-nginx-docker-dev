@@ -2,6 +2,8 @@ name: Create Release PR
 
 on:
   push:
+    branches:
+      - develop
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -13,14 +15,23 @@ jobs:
     timeout-minutes: 3
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.1.1
+
     - name: Create a release pull request
       env:
         TZ: Asia/Tokyo
-        GIT_PR_RELEASE_TOKEN: ${{ secrets.TEST_TOKEN }}
+        GIT_PR_RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GIT_PR_RELEASE_BRANCH_PRODUCTION: master
         GIT_PR_RELEASE_BRANCH_STAGING:  develop
         GIT_PR_RELEASE_TEMPLATE: .github/.git-pr-template
         GIT_PR_RELEASE_LABELS: "Waiting for Approve"
       run: |
-       gh pr create --title "The bug is fixed" --body "Everything works again"
+        gem install --no-document git-pr-release -v "2.1.2"
+        git remote set-url origin "https://${GITHUB_ACTOR}:${GIT_PR_RELEASE_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        git-pr-release --no-fetch || echo "Done."
