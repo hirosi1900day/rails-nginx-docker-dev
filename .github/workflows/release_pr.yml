@@ -26,4 +26,4 @@ jobs:
         GIT_PR_RELEASE_TEMPLATE: .github/.git-pr-template
         GIT_PR_RELEASE_LABELS: "Waiting for Approve"
       run: |
-        gh pr create --title "Pull request title" --body "Pull request body"
+       gh pr create
