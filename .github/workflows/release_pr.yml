@@ -27,8 +27,8 @@ jobs:
       env:
         TZ: Asia/Tokyo
         GIT_PR_RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GIT_PR_RELEASE_BRANCH_PRODUCTION: main
-        GIT_PR_RELEASE_BRANCH_STAGING: master
+        GIT_PR_RELEASE_BRANCH_PRODUCTION: master
+        GIT_PR_RELEASE_BRANCH_STAGING:  develop
         GIT_PR_RELEASE_TEMPLATE: .github/.git-pr-template
         GIT_PR_RELEASE_LABELS: "Waiting for Approve"
       run: |
