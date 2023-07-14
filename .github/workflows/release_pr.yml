@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - develop
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
