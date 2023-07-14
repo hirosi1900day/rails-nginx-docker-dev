@@ -26,4 +26,4 @@ jobs:
         GIT_PR_RELEASE_TEMPLATE: .github/.git-pr-template
         GIT_PR_RELEASE_LABELS: "Waiting for Approve"
       run: |
-       gh pr create
+       gh pr create --title "The bug is fixed" --body "Everything works again"
