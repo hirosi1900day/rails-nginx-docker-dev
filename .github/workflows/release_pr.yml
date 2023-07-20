@@ -3,7 +3,9 @@ name: Create Release PR
 on:
   push:
     branches:
-      - master
+      - develop
+permissions:
+  pull-requests: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -21,7 +23,7 @@ jobs:
 
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.1.1
+        ruby-version: 2.7.8
 
     - name: Create a release pull request
       env:
@@ -32,6 +34,5 @@ jobs:
         GIT_PR_RELEASE_TEMPLATE: .github/.git-pr-template
         GIT_PR_RELEASE_LABELS: "Waiting for Approve"
       run: |
-        gem install faraday-retry
         gem install --no-document git-pr-release -v "2.1.2"
-        git-pr-release --no-fetch
+        git-pr-release --no-fetch || echo "Done."
