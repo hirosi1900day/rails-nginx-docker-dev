@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  rspec:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: ava_test
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost"
+          --health-interval 20s
+          --health-timeout 10s
+          --health-retries 10
+        ports:
+          - 3306:3306
+
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli -h localhost ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 15
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.1
+          bundler-cache: true
+
+      - name: Run Elasticsearch
+        uses: elastic/elastic-github-actions/elasticsearch@master
+        with:
+          stack-version: 7.13.3
+          plugins: analysis-kuromoji
+
+      - name: Rspec
+        env:
+          RAILS_ENV: test
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_USERNAME: root
+          MYSQL_PASSWORD: root
+          REDIS_URL: redis://127.0.0.1:6379
+          TEST_ELASTICSEARCH_URL: http://127.0.0.1:9200
+        run: |
+          bin/rails ridgepole:apply:update
+          bin/rspec
+
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.1
+          bundler-cache: true
+      - uses: reviewdog/action-setup@v1
+      - name: Run rubocop with reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo 'tesys'
+          bundle exec rubocop | reviewdog -reporter=github-pr-review -f=rubocop -filter-mode=nofilter -fail-on-error
+  brakeman:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.1
+          bundler-cache: true
+
+      - name: brakeman
+        run: bundle exec brakeman
