@@ -1,0 +1,28 @@
+name: run-actions-using-diff-files
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ master ]
+
+env:
+  base_branch: master
+
+jobs:
+  run-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Switch to pull request branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Fetch base branch
+        run: git fetch origin ${base_branch}:${base_branch}
+
+      - name: Run actions using diff_files
+        run: |
+          diff_files=$(git diff --name-only HEAD ${base_branch} \
+            | tr "\n" " ")
+          echo "# diff_files: ${diff_files}"
+          #### 一旦ここまで確認
