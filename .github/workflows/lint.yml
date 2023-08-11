@@ -7,6 +7,7 @@ on:
 
 env:
   base_branch: master
+  diff_path: '**.yml'
 
 jobs:
   run-actions:
@@ -22,7 +23,7 @@ jobs:
 
       - name: Run actions using diff_files
         run: |
-          diff_files=$(git diff --name-only HEAD ${base_branch} \
+          diff_files=$(git diff --name-only HEAD ${base_branch} -- "${diff_path}" \
             | tr "\n" " ")
           echo "# diff_files: ${diff_files}"
           #### 一旦ここまで確認
