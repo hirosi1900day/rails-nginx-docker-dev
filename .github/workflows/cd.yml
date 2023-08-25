@@ -3,7 +3,7 @@ name: Deploy work flow for Amazon ECS
 on:
   push:
     branches:
-      - master
+      - main
 env:
   AWS_REGION: ap-northeast-1
   ECS_WEBAPP_SERVICE: service-main
