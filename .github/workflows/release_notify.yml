@@ -1,4 +1,4 @@
-name: deploy
+name: release_notify
 
 on:
   pull_request:
