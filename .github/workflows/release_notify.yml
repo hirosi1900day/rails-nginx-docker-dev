@@ -21,6 +21,7 @@ jobs:
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/${{ github.event.pull_request.number }}/commits" | \
             jq -r '.[].commit.message')
 
+        echo "COMMIT_MESSAGES=$COMMIT_MESSAGES" >> $GITHUB_ENV
         # Echo each commit message (optional, just for clarity)
         echo "$COMMIT_MESSAGES" | while read line; do
           echo "$line"
@@ -28,6 +29,7 @@ jobs:
 
         # If you want to extract PR numbers from these commit messages
         PR_NUMBERS=$(echo "$COMMIT_MESSAGES" | grep -o "#[0-9]*" | tr -d '#')
+        echo "PR_NUMBERS: $PR_NUMBERS"
         echo "PR_NUMBERS=$PR_NUMBERS" >> $GITHUB_ENV
 
     - name: Notify authors of related PRs
