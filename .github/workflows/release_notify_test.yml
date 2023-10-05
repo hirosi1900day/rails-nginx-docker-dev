@@ -17,10 +17,13 @@ jobs:
     - name: Notify authors of merged PRs
       run: |
         PR_NUMBERS=$(git log --merges --pretty=format:"%s" | grep -o "#[0-9]*" | tr -d '#')
+        echo "PR_NUMBERS=$PR_NUMBERS" >> $GITHUB_ENV
         for PR_NUMBER in $PR_NUMBERS; do
+          echo "PR_NUMBER: $PR_NUMBER"
           AUTHOR_LOGIN=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" | \
             jq -r .user.login)
+          echo "AUTHOR_LOGIN: $AUTHOR_LOGIN"
           curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -X POST -d "{\"body\":\"@${AUTHOR_LOGIN} このPRはデプロイされました。\"}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments"
