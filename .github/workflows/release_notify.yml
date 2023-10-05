@@ -29,22 +29,17 @@ jobs:
 
         # If you want to extract PR numbers from these commit messages
         PR_NUMBERS=$(echo "$COMMIT_MESSAGES" | grep -o "#[0-9]*" | tr -d '#')
-        echo "PR_NUMBERS: $PR_NUMBERS"
-        echo "PR_NUMBERS=$PR_NUMBERS" >> $GITHUB_ENV
 
-    - name: Notify authors of related PRs
-      run: |
         for PR_NUMBER in $PR_NUMBERS; do
-          AUTHOR_LOGIN=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          AUTHOR_LOGIN=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" | \
             jq -r .user.login)
 
           echo "AUTHOR_LOGIN: $AUTHOR_LOGIN"
           echo "PR_NUMBER: $PR_NUMBER"
-          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
             -X POST -d "{\"body\":\"@${AUTHOR_LOGIN} このPRはデプロイされました。\"}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments"
         done
       env:
-        PR_NUMBERS: ${{ env.PR_NUMBERS }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
