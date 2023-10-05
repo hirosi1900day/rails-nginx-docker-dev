@@ -30,5 +30,5 @@ jobs:
           AUTHOR_LOGIN=$(gh api repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER --jq '.user.login')
           
           # コメントを追加
-          echo "{\"body\":\"@${AUTHOR_LOGIN} このPRはデプロイされました。\"}" | gh api repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments -X POST -F -
+          echo "{\"body\":\"@${AUTHOR_LOGIN} このPRはデプロイされました。\"}" | gh api repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments -X POST -f -
         done
