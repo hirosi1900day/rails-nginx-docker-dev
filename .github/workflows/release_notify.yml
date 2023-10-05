@@ -17,6 +17,8 @@ jobs:
 
     - name: Notify authors of merged PRs
       run: |
+        TEST=$(git log --merges --pretty=format:"%s")
+        echo "TEST: $TEST"
         PR_NUMBERS=$(git log --merges --pretty=format:"%s" | grep -o "#[0-9]*" | tr -d '#')
         echo "PR_NUMBERS: $PR_NUMBERS"
         echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
