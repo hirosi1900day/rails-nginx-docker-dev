@@ -6,7 +6,7 @@ on:
     branches: [master]
 
 permissions: write-all
-# test
+# test2
 jobs:
   notify-authors:
     runs-on: ubuntu-latest
