@@ -15,13 +15,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Notify authors of merged PRs
+    - name: Extract commit messages from PR
       run: |
-        TEST=$(git log --merges --pretty=format:"%s")
-        echo "TEST: $TEST"
-        PR_NUMBERS=$(git log --merges --pretty=format:"%s" | grep -o "#[0-9]*" | tr -d '#')
-        echo "PR_NUMBERS: $PR_NUMBERS"
-        echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
+        COMMIT_MESSAGES=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/${{ github.event.pull_request.number }}/commits" | \
+            jq -r '.[].commit.message')
+
+        # Echo each commit message (optional, just for clarity)
+        echo "$COMMIT_MESSAGES" | while read line; do
+          echo "$line"
+        done
+
+        # If you want to extract PR numbers from these commit messages
+        PR_NUMBERS=$(echo "$COMMIT_MESSAGES" | grep -o "#[0-9]*" | tr -d '#')
+        echo "PR_NUMBERS=$PR_NUMBERS" >> $GITHUB_ENV
+
+    - name: Notify authors of related PRs
+      run: |
         for PR_NUMBER in $PR_NUMBERS; do
           AUTHOR_LOGIN=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" | \
@@ -33,6 +43,6 @@ jobs:
             -X POST -d "{\"body\":\"@${AUTHOR_LOGIN} このPRはデプロイされました。\"}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments"
         done
-
       env:
+        PR_NUMBERS: ${{ env.PR_NUMBERS }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
