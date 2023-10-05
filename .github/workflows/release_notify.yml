@@ -21,7 +21,6 @@ jobs:
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/${{ github.event.pull_request.number }}/commits" | \
             jq -r '.[].commit.message')
 
-        echo "COMMIT_MESSAGES=$COMMIT_MESSAGES" >> $GITHUB_ENV
         # Echo each commit message (optional, just for clarity)
         echo "$COMMIT_MESSAGES" | while read line; do
           echo "$line"
