@@ -29,6 +29,6 @@ jobs:
           # PRの作者のログイン名を取得
           AUTHOR_LOGIN=$(gh api repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER --jq '.user.login')
           
-          # コメントを追加
-          echo "{\"body\":\"@${AUTHOR_LOGIN} このPRはデプロイされました。\"}" | gh api repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments -X POST -f -
+          BODY_CONTENT="{\"body\":\"@${AUTHOR_LOGIN} このPRはデプロイされました。\"}"
+          gh api repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments -X POST -f "$BODY_CONTENT"
         done
