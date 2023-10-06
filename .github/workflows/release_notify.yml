@@ -16,12 +16,15 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        # リリースPRに含まれるコミットメッセージを取得
         COMMIT_MESSAGES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/${{ github.event.pull_request.number }}/commits" | \
             jq -r '.[].commit.message')
 
+        # コミットメッセージからPR番号を抽出
         PR_NUMBERS=$(echo "$COMMIT_MESSAGES" | grep -o "#[0-9]*" | tr -d '#')
 
+        # PR番号からPRの作者を取得し、コメントを投稿
         for PR_NUMBER in $PR_NUMBERS; do
           AUTHOR_LOGIN=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" | \
