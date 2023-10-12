@@ -30,6 +30,10 @@ jobs:
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" | \
             jq -r .user.login)
 
+          if [ "$AUTHOR_LOGIN" = "mpg-hiroshi-tokudomi" ]; then
+            continue
+          fi
+
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
             -X POST -d "{\"body\":\"@${AUTHOR_LOGIN} このPRはデプロイされました。\"}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments"
