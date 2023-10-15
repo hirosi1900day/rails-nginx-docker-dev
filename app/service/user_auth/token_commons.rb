@@ -9,7 +9,7 @@ module UserAuth
   
       # デコードキー
       def decode_key
-        UserAuth.token_public_key || secret_key
+        UserAuth.token_public_key
       end
   
       # アルゴリズム
@@ -60,7 +60,6 @@ module UserAuth
           alg: algorithm
         }
       end
-  
     end
   end
   

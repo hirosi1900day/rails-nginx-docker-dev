@@ -1,6 +1,7 @@
 require "validator/email_validator"
 
 class User < ApplicationRecord
+  include TokenGenerateService
   before_validation :downcase_email
 
   # gem bcrypt
@@ -34,6 +35,16 @@ class User < ApplicationRecord
   def email_activated?
     users = User.where.not(id: id)
     users.find_activated(email).present?
+  end
+
+  # リフレッシュトークのjtiを更新する
+  def remember(jti)
+    update!(refresh_jti: jti)
+  end
+
+  # リフレッシュトークのjtiを削除する
+  def forget
+    update!(refresh_jti: nil)
   end
 
   private
