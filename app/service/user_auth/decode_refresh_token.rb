@@ -21,8 +21,7 @@ module UserAuth
     end
 
     private
-
-
+    
     # デコード時のデフォルトオプション
     # Doc: https://github.com/jwt/ruby-jwt
     # default: https://www.rubydoc.info/github/jwt/ruby-jwt/master/JWT/DefaultOptions
