@@ -38,6 +38,12 @@ jobs:
   base:
     needs: [test]
     uses: ./.github/workflows/release_notify_base.yml
+  test2:
+    needs: [base]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test2
+        run: echo ${{ github.event.pull_request.merged }}
   notify-authors:
     needs: [test]
     if: ${{ github.event.pull_request.merged }}
