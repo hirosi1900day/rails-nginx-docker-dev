@@ -17,7 +17,7 @@ jobs:
       deploy-sha: ${{ steps.get-sha.outputs.result }}
     steps:
       - name: 確認
-        run: echo {{ github.ref }}
+        run: echo ${{ github.ref }}
       - uses: actions/checkout@v4
         with:
           fetch-depth: 10 # 次のステップで parent commit を取得するために多めに取得している
