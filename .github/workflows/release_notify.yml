@@ -3,6 +3,7 @@ name: release_notify
 on:
   pull_request:
     branches: [master]
+    types: [closed]
 
 permissions:
   contents: read
