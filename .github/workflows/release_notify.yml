@@ -54,7 +54,7 @@ jobs:
     steps:
     - name: Notify authors
       run: |
-        # リリースPRに含まれるコミットメッセージを取得
+        # リリースPRに含まれるコミットメッセージを取得する
         COMMIT_MESSAGES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/${{ github.event.pull_request.number }}/commits" | \
             jq -r '.[].commit.message')
