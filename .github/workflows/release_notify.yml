@@ -1,9 +1,9 @@
 name: release_notify
 
 on:
-  push:
-    branches: [master]
+  pull_request:
     types: [closed]
+    branches: [master]
 
 permissions:
   contents: read
