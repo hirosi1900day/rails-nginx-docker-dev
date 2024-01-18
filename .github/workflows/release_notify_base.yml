@@ -1,0 +1,11 @@
+name: release_notify_base
+
+on:
+  workflow_call:
+# test2
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      run: echo 'ベースのワークフロー'
