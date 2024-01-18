@@ -12,11 +12,12 @@ jobs:
   pre-deploy:
     runs-on: ubuntu-latest
     # NOTE: 本番デプロイは基本的に master ブランチからのデプロイのみを許容する
-    if: github.ref == 'refs/heads/master'
     timeout-minutes: 1
     outputs:
       deploy-sha: ${{ steps.get-sha.outputs.result }}
     steps:
+      - name: 確認
+        run: echo {{ github.ref }}
       - uses: actions/checkout@v4
         with:
           fetch-depth: 10 # 次のステップで parent commit を取得するために多めに取得している
