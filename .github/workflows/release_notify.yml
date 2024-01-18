@@ -2,7 +2,6 @@ name: release_notify
 
 on:
   pull_request:
-    types: [closed]
     branches: [master]
 
 permissions:
@@ -10,6 +9,23 @@ permissions:
   deployments: write
 
 jobs:
+  pre-deploy:
+    runs-on: ubuntu-latest
+    # NOTE: 本番デプロイは基本的に master ブランチからのデプロイのみを許容する
+    if: github.ref == 'refs/heads/master'
+    timeout-minutes: 1
+    outputs:
+      deploy-sha: ${{ steps.get-sha.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 10 # 次のステップで parent commit を取得するために多めに取得している
+      # NOTE: マージしたdevelopブランチの最新のSHAを取得
+      - name: Get deploy SHA
+        id: get-sha
+        run: |
+          parent_commit=$(git rev-list --parents -n 1 HEAD | awk '{print $3}')
+          echo "result=$parent_commit" >> $GITHUB_OUTPUT
   base:
     uses: ./.github/workflows/release_notify_base.yml
   notify-authors:
