@@ -1,9 +1,9 @@
 name: release_notify
 
 on:
-  push:
-    branches: 
-      - master
+  pull_request:
+    types: [closed]
+    branches: [master]
 
 permissions:
   contents: read
@@ -37,7 +37,7 @@ jobs:
             jq -r .user.login)
 
           echo $AUTHOR_LOGIN
-          
+
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
             -X POST -d "{\"body\":\"@${AUTHOR_LOGIN} このPRはデプロイされました。\"}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments"
