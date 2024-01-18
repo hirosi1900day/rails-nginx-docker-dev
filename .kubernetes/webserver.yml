@@ -13,9 +13,7 @@ spec:
   ports:
     - name: http
       protocol: TCP
-      # 受信するポート
       port: 80
-      # 送信するポート
       targetPort: 80
 
 ---
