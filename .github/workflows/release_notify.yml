@@ -38,9 +38,11 @@ jobs:
   base:
     uses: ./.github/workflows/release_notify_base.yml
   notify-authors:
+    needs: base
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
-    needs: [base]
     timeout-minutes: 1
+
     steps:
     - name: Notify authors
       run: |
@@ -49,11 +51,8 @@ jobs:
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/${{ github.event.pull_request.number }}/commits" | \
             jq -r '.[].commit.message')
 
-        echo $COMMIT_MESSAGES
         # コミットメッセージからPR番号を抽出
         PR_NUMBERS=$(echo "$COMMIT_MESSAGES" | grep -o "#[0-9]*" | tr -d '#')
-
-        echo $PR_NUMBERS
 
         # PR番号からPRの作者を取得し、コメントを投稿
         for PR_NUMBER in $PR_NUMBERS; do
@@ -61,12 +60,9 @@ jobs:
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" | \
             jq -r .user.login)
 
-          echo $AUTHOR_LOGIN
-
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
             -X POST -d "{\"body\":\"@${AUTHOR_LOGIN} このPRはデプロイされました。\"}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments"
         done
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
