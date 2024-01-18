@@ -38,7 +38,7 @@ jobs:
   base:
     uses: ./.github/workflows/release_notify_base.yml
   notify-authors:
-    needs: base
+    needs: [base]
     if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     timeout-minutes: 1
