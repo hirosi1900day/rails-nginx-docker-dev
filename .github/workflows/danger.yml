@@ -1,6 +1,9 @@
 name: Danger
 on: [pull_request]
-permissions: write-all
+permissions:
+    contents: read
+    issues: write
+    pull-requests: write
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
@@ -19,7 +22,7 @@ jobs:
         uses: ruby/setup-ruby@v1
       # NOTE: 10秒程度でインストールは完了するので ruby/setup-ruby の bundle cache は使わず
       # 毎回 bundle install している
-      - run: bundle install Danger
+      - run: bundle install --jobs 2 --retry 3
       - name: Danger
         run: bundle exec danger --verbose
         env:
