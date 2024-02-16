@@ -1,9 +1,9 @@
 name: Danger
 on: [pull_request]
 permissions:
-    contents: read
-    issues: write
-    pull-requests: write
+  contents: read
+  issues: write
+  pull-requests: write
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
