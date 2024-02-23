@@ -18,20 +18,21 @@ module UserAuthenticateService
 
   # リクエストヘッダートークンを取得する
   def access_token_from_request_headers
-    request.headers["Authorization"]&.split&.last
+    request.headers['Authorization']&.split&.last
   end
 
   # access_tokenから有効なユーザーを取得する
   def fetch_user_from_access_token
     UserAuth.new(token: access_token_from_request_headers).entity_for_user
   rescue UserAuth.not_found_exception_class,
-          JWT::DecodeError, JWT::EncodeError
+         JWT::DecodeError, JWT::EncodeError
     nil
   end
 
   # tokenのユーザーを返す
   def current_user
     return nil unless access_token_from_request_headers
+
     @_current_user ||= fetch_user_from_access_token
   end
 end

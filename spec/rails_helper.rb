@@ -3,7 +3,7 @@ require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
+abort('The Rails environment is running in production mode!') if Rails.env.production?
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
@@ -27,9 +27,9 @@ require 'rspec/rails'
 
 Capybara.register_driver :headless_chrome do |app|
   browser_options = ::Selenium::WebDriver::Chrome::Options.new.tap do |opts|
-    opts.args << "--headless"
-    opts.args << "--disable-gpu"
-    opts.args << "--no-sandbox"
+    opts.args << '--headless'
+    opts.args << '--disable-gpu'
+    opts.args << '--no-sandbox'
   end
   Capybara::Selenium::Driver.new(app, browser: :chrome, capabilities: browser_options)
 end
@@ -72,7 +72,7 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
-  
+
   config.include(RequestSpecHelper, type: :request)
   config.include(SystemSpecHelper, type: :system)
   config.include(ViewSpecHelper, type: :view)

@@ -21,14 +21,14 @@ module UserAuth
     end
 
     private
-    
+
     # デコード時のデフォルトオプション
     # Doc: https://github.com/jwt/ruby-jwt
     # default: https://www.rubydoc.info/github/jwt/ruby-jwt/master/JWT/DefaultOptions
     def verify_claims
       {
-        verify_expiration: true,           # 有効期限の検証するか(必須)
-        algorithm: algorithm               # decode時のアルゴリズム
+        verify_expiration: true, # 有効期限の検証するか(必須)
+        algorithm: # decode時のアルゴリズム
       }
     end
   end

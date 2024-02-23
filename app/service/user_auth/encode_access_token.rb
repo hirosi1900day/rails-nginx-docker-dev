@@ -10,7 +10,6 @@ module UserAuth
     def initialize(user_id: nil)
       @encode_user_id = encrypt_for(user_id)
       @lifetime = UserAuth.access_token_lifetime
-      
     end
 
     def access_token
