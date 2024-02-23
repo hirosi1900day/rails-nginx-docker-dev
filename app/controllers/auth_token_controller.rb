@@ -15,7 +15,7 @@ class AuthTokenController < ApplicationController
     render json: {
       token: access_token,
       expires: access_token_expiration,
-      refresh_token: refresh_token,
+      refresh_token:
     }
   end
 
@@ -26,7 +26,7 @@ class AuthTokenController < ApplicationController
     render json: {
       token: access_token,
       expires: access_token_expiration,
-      refresh_token: refresh_token,
+      refresh_token:
     }
   end
 
@@ -37,34 +37,32 @@ class AuthTokenController < ApplicationController
     ## sessionを送っているユーザーが現在ログイン中かを確認する
   end
 
-  end
-
   # ログイン時のデフォルトレスポンス
   def login_response
-  {
+    {
       token: access_token,
-      expires: access_token_expiration,
-  }
+      expires: access_token_expiration
+    }
   end
 
   # リフレッシュトークンのインスタンス生成
   def encode_refresh_token
-  @_encode_refresh_token ||= @user.encode_refresh_token
+    @encode_refresh_token ||= @user.encode_refresh_token
   end
 
   # リフレッシュトークン
   def refresh_token
-  encode_refresh_token.token
+    encode_refresh_token.token
   end
 
   # リフレッシュトークンの有効期限
   def refresh_token_expiration
-  Time.at(encode_refresh_token.payload[:exp])
+    Time.at(encode_refresh_token.payload[:exp])
   end
 
   # アクセストークンのインスタンス生成
   def encode_access_token
-  @_encode_access_token ||= @user.encode_access_token
+    @encode_access_token ||= @user.encode_access_token
   end
 
   # アクセストークン
@@ -90,12 +88,11 @@ class AuthTokenController < ApplicationController
 
   # decode jti != user.refresh_jti のエラー処理
   def invalid_jti
-    msg = "Invalid jti for refresh token"
+    msg = 'Invalid jti for refresh token'
     render status: 401, json: { status: 401, error: msg }
   end
 
   def auth_params
-   params.require(:auth).permit(:email, :password)
+    params.require(:auth).permit(:email, :password)
   end
 end
-  
