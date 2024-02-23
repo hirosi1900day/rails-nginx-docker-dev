@@ -14,6 +14,8 @@ class ApplicationController < ActionController::API
     # リクエストヘッダ X-Requested-With: 'XMLHttpRequest' の存在を判定
     return if request.xhr?
 
+    Rails.error('XMLHttpRequestでないリクエストが検出されました。', 'test')
+
     render status: :forbidden, json: { status: 403, error: 'Forbidden' }
   end
 
