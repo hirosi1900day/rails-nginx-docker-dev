@@ -93,13 +93,6 @@ commands:
           include-branch-in-cache-key: false
           cache-version: v7
 
-  bootsnap-precompile:
-    steps:
-      - run:
-          name: Precompile bootsnap cache
-          command: |
-            bundle exec bootsnap precompile --gemfile app/ lib/ spec/
-
   assets-precompile:
     steps:
       - restore_cache:
@@ -237,7 +230,6 @@ jobs:
       - bundle-install
       - yarn-install
       - run: ln -s secrets.yml.development config/secrets.yml
-      - bootsnap-precompile
       - assets-precompile
       - persist_to_workspace:
           root: .
