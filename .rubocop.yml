@@ -3,3 +3,8 @@ inherit_from: .rubocop_todo.yml
 require:
   - rubocop-rails
   - rubocop-rspec
+  - ./lib/rubocop/cop/style/no_puts_method
+
+
+Style/NoPutsMethod:
+  Enabled: true
