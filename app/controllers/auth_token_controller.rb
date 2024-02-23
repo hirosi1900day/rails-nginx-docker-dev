@@ -21,7 +21,7 @@ class AuthTokenController < ApplicationController
 
   # リフレッシュ
   def refresh
-    head(:unauthorized) and return unless session_user.present?
+    head(:unauthorized) and return if session_user.blank?
 
     render json: {
       token: access_token,
@@ -57,7 +57,7 @@ class AuthTokenController < ApplicationController
 
   # リフレッシュトークンの有効期限
   def refresh_token_expiration
-    Time.at(encode_refresh_token.payload[:exp])
+    Time.zone.at(encode_refresh_token.payload[:exp])
   end
 
   # アクセストークンのインスタンス生成
@@ -89,7 +89,7 @@ class AuthTokenController < ApplicationController
   # decode jti != user.refresh_jti のエラー処理
   def invalid_jti
     msg = 'Invalid jti for refresh token'
-    render status: 401, json: { status: 401, error: msg }
+    render status: :unauthorized, json: { status: 401, error: msg }
   end
 
   def auth_params

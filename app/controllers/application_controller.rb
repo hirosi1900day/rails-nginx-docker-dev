@@ -19,6 +19,6 @@ class ApplicationController < ActionController::API
 
   # Internal Server Error
   def response_500(msg = 'Internal Server Error')
-    render status: 500, json: { status: 500, error: msg }
+    render status: :internal_server_error, json: { status: 500, error: msg }
   end
 end

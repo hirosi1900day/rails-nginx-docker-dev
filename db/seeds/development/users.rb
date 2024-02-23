@@ -10,4 +10,4 @@
   user.save!
 end
 
-puts "users = #{User.count}"
+Rails.logger.debug "users = #{User.count}"
