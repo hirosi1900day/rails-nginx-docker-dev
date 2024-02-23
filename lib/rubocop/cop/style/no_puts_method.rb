@@ -1,6 +1,11 @@
+require 'rubocop-rails'
+
 module RuboCop
   module Cop
     module Style
+
+    # class NoPutsMethod < RuboCop::Cop::Base
+    #     extend RuboCop::Cop::AutoCorrector
       class NoPutsMethod < Base
         extend AutoCorrector
 
