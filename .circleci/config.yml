@@ -296,7 +296,7 @@ workflows:
             - rb-deps
       - coverage:
           requires:
-            - rspec_with_assets
+            - rspec
           filters:
             branches:
               only:
