@@ -5,7 +5,7 @@ class ApplicationController < ActionController::API
   include UserAuthenticateService
 
   # CSRF対策
-  before_action :xhr_request?
+  # before_action :xhr_request?
 
   private
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_01_17_002031) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_03_105417) do
   create_table "cards", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "image_url", null: false
@@ -79,6 +79,16 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_17_002031) do
     t.string "refresh_jti"
   end
 
+  create_table "weight_histroys", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "weight"
+    t.string "memo"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_weight_histroys_on_user_id"
+  end
+
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
+  add_foreign_key "weight_histroys", "users"
 end

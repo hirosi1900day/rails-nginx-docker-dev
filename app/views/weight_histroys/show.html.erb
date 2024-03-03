@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @weight_histroy %>
+
+<div>
+  <%= link_to "Edit this weight histroy", edit_weight_histroy_path(@weight_histroy) %> |
+  <%= link_to "Back to weight histroys", weight_histroys_path %>
+
+  <%= button_to "Destroy this weight histroy", @weight_histroy, method: :delete %>
+</div>

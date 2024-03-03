@@ -1,10 +1,14 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
-ENV['RAILS_ENV'] ||= 'test'
+ENV['RAILS_ENV'] = 'test'
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
 abort('The Rails environment is running in production mode!') if Rails.env.production?
 require 'rspec/rails'
+
+RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
+end
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -25,16 +29,27 @@ require 'rspec/rails'
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
 
-Capybara.register_driver :headless_chrome do |app|
-  browser_options = ::Selenium::WebDriver::Chrome::Options.new.tap do |opts|
-    opts.args << '--headless'
-    opts.args << '--disable-gpu'
-    opts.args << '--no-sandbox'
-  end
-  Capybara::Selenium::Driver.new(app, browser: :chrome, capabilities: browser_options)
-end
+# Capybara.default_driver = :selenium_chrome_headless
+# Capybara.register_driver :selenium_chrome_headless do |app|
+#   options = Selenium::WebDriver::Chrome::Options.new
+#   options.add_argument('--headless')
+#   options.add_argument('--no-sandbox')
+#   options.add_argument('--disable-gpu')
+#   options.add_argument('--window-size=1280,1024')
 
-Capybara.server = :puma, { Silent: true }
+#   Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+# end
+
+Capybara.register_driver(:playwright) do |app|
+  channel = ENV['PLAYWRIGHT_CHROMIUM_CHANNEL'] || 'chromium'
+  Capybara::Playwright::Driver.new(app, channel:, viewport: { width: 1400, height: 1400 }, acceptDownloads: true, headless: true, callback_on_save_trace: true)
+end
+Capybara.default_max_wait_time = 15
+Capybara.default_driver = :playwright
+Capybara.javascript_driver = :playwright
+Capybara.save_path = 'tmp/downloads'
+
+# Capybara.server = :puma, { Silent: true }
 
 begin
   ActiveRecord::Migration.maintain_test_schema!
@@ -73,15 +88,18 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  config.include(RequestSpecHelper, type: :request)
-  config.include(SystemSpecHelper, type: :system)
-  config.include(ViewSpecHelper, type: :view)
+
+  # config.before(:each, type: :system) do
+  #   driven_by :rack_test
+  # end
 
   config.before(:each, type: :system) do
-    driven_by :rack_test
+    driven_by(:playwright)
+    # driven_by :selenium_chrome_headless
   end
 
   config.before(:each, type: :system, js: true) do
-    driven_by :headless_chrome
+    driven_by :selenium_chrome_headless
   end
+  # config.include FactoryBot::Syntax::Methods
 end
