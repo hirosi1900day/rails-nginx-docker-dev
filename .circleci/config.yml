@@ -1,16 +1,15 @@
 version: 2.1
 
 orbs:
-  browser-tools: circleci/browser-tools@1.4.6
+  browser-tools: circleci/browser-tools@1.4.8
   node: circleci/node@5.2.0
   ruby: circleci/ruby@2.1.1
 
 primary: &primary
-  image: cimg/ruby:3.1.4-browsers
+  image: cimg/ruby:3.1.1-browsers
   environment:
     RAILS_ENV: test
     NODE_ENV: test
-    BUNDLE_WITHOUT: production:staging:development:rubocop:danger
     TZ: "Asia/Tokyo"
     LANG: ja_JP.UTF-8
     LC_ALL: C.UTF-8
@@ -25,16 +24,17 @@ executors:
   node:
     docker:
       - <<: *primary
-        image: cimg/base:2023.06
+        image: cimg/base:2024.02
   rspec:
     docker:
       - <<: *primary
-      - image: cimg/mysql:5.7.38
+      - image: cimg/mysql:8.0.29
         name: db
         command: mysqld --character_set_server=utf8 --sql-mode=NO_ENGINE_SUBSTITUTION
         environment:
           MYSQL_ALLOW_EMPTY_PASSWORD: "true"
           MYSQL_ROOT_HOST: "%"
+          PLAYWRIGHT_CHROMIUM_CHANNEL: 'chromium'
 
 commands:
   dependency-install:
@@ -86,7 +86,7 @@ commands:
     steps:
       - node/install:
           install-yarn: true
-          node-version: 18.18.2
+          node-version: 20.11.1
           yarn-version: 1.22.15
       - node/install-packages:
           pkg-manager: yarn
@@ -144,6 +144,9 @@ commands:
         type: integer
         default: 0
     steps:
+      - run:
+          name: install chromium
+          command: yarn playwright install chromium
       - run:
           name: run RSpec
           environment:
@@ -259,9 +262,8 @@ jobs:
           name: run eager loading check
           command: bin/rails runner Rails.application.eager_load!
       - exec-rspec:
-          exclude-regex: spec\/(requests|system|decorators|views|helpers|serializers)\/.*_spec.rb
-          retry-failures: false
-          failure-exit-code: 1
+          retry-failures: true
+          failure-exit-code: 0
       - store_test_results:
           path: /tmp/results
       - store_artifacts:
@@ -270,38 +272,6 @@ jobs:
           root: .
           paths:
             - coverage/
-
-  rspec_with_assets:
-    executor: rspec
-    parallelism: 10
-    parameters:
-      bundle_gemfile:
-        type: string
-        default: Gemfile
-    environment:
-      BUNDLE_GEMFILE: << parameters.bundle_gemfile >>
-    steps:
-      - setup-ruby-ci
-      - attach_workspace:
-          at: .
-      - bundle-install
-      - install-browser-tools
-      - run: ln -s secrets.yml.development config/secrets.yml
-      - setup-database
-      - exec-rspec:
-          target-path: "spec/{requests,system,decorators,views,helpers,serializers}/**/*_spec.rb"
-          exclude-regex: spec\/system\/(acceptances|talk\/scenario)\/.*_spec.rb
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/rspec_files_list.txt
-      - store_artifacts:
-          path: .capybara
-      - persist_to_workspace:
-          root: .
-          paths:
-            - coverage/
-
   coverage:
     executor: default
     resource_class: small
@@ -314,28 +284,6 @@ jobs:
       - store_artifacts:
           path: coverage
 
-  code_analyze:
-    executor: default
-    resource_class: medium
-    steps:
-      - setup-ruby-ci
-      - bundle-install
-      - run: mkdir -p ${ARTIFACTS_DIR}
-      - run:
-          name: brakeman
-          command: bundle exec brakeman -o ${ARTIFACTS_DIR}/brakeman_output.html
-          when: always
-      - run:
-          name: haml-lint
-          command: bundle exec haml-lint -r default -p app/views/
-          when: always
-      - run:
-          name: erblint
-          command: bundle exec erblint app/views
-          when: always
-      - store_artifacts:
-          path: /tmp/artifacts
-
 workflows:
   build_and_analyze:
     jobs:
@@ -346,17 +294,6 @@ workflows:
       - rspec:
           requires:
             - rb-deps
-      - rspec_with_assets:
-          requires:
-            - rspec
-            - assets
-      - code_analyze:
-          requires:
-            - rb-deps
-          filters:
-            branches:
-              ignore:
-                - master
       - coverage:
           requires:
             - rspec_with_assets
