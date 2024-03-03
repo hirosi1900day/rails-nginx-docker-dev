@@ -1,0 +1,2 @@
+module WeightHistroysHelper
+end
