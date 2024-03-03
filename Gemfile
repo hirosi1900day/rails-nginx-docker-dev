@@ -80,6 +80,8 @@ group :test do
   gem 'rspec_junit_formatter'
   gem 'rspec-rails'
   gem 'selenium-webdriver'
+  gem 'capybara-playwright-driver'
+  gem 'playwright-ruby-client'
   # gem 'webdrivers'
 end
 
