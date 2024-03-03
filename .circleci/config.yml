@@ -93,16 +93,41 @@ commands:
           include-branch-in-cache-key: false
           cache-version: v7
 
-  assets-precompile:
-    steps:
-      - run:
-          name: assets:precompile
-          command: |
-            date '+%Y%m%d' > tmp/assets-cache-date
-            bin/rails assets:precompile assets:clean[0]
-      - run:
-          name: Display disk usage for assets caches
-          command: du -h -d 1 tmp/cache/ public/assets/ public/packs-test/ node_modules/.cache
+  # assets-precompile:
+  #   steps:
+  #     - restore_cache:
+  #         name: Restoring Cache - assets:precompile
+  #         keys:
+  #           - assets-cache-v16-{{ .Branch }}-{{ .Revision }}
+  #           - assets-cache-v16-{{ .Branch }}
+  #           - assets-cache-v16-develop
+  #     - run:
+  #         # NOTE: develop, masterブランチで1日毎にキャッシュを削除
+  #         name: Remove tmp files on protected branches
+  #         command: |
+  #           branches=('develop' 'master')
+  #           if [ `echo ${branches[@]} | grep -q ${CIRCLE_BRANCH}; echo $?` -a "$(cat tmp/assets-cache-date)" != "$(date '+%Y%m%d')" ]; then
+  #             rm -rf tmp/cache/assets
+  #             rm -rf node_modules/.cache
+  #           fi
+  #     - run:
+  #         name: assets:precompile
+  #         command: |
+  #           date '+%Y%m%d' > tmp/assets-cache-date
+  #           bin/rails assets:precompile assets:clean[0]
+  #     - run:
+  #         name: Display disk usage for assets caches
+  #         command: du -h -d 1 tmp/cache/ public/assets/ public/packs-test/ node_modules/.cache
+  #     - save_cache:
+  #         name: Saving Cache - assets:precompile
+  #         key: assets-cache-v16-{{ .Branch }}-{{ .Revision }}
+  #         paths:
+  #           - "./public/assets"
+  #           - "./public/packs-test"
+  #           - "./tmp/assets-cache-date"
+  #           - "./tmp/cache/assets"
+  #           - "./node_modules/.cache/babel-loader"
+  #           - "./node_modules/.cache/webpack"
 
   exec-rspec:
     parameters:
@@ -208,7 +233,7 @@ jobs:
       - bundle-install
       - yarn-install
       - run: ln -s secrets.yml.development config/secrets.yml
-      - assets-precompile
+      # - assets-precompile
       - persist_to_workspace:
           root: .
           paths:
