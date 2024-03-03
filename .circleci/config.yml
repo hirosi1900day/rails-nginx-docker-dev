@@ -82,16 +82,16 @@ commands:
           clean-bundle: true
           include-branch-in-cache-key: false
 
-  # yarn-install:
-  #   steps:
-  #     - node/install:
-  #         install-yarn: true
-  #         node-version: 20.11.1
-  #         yarn-version: 1.22.15
-  #     - node/install-packages:
-  #         pkg-manager: yarn
-  #         include-branch-in-cache-key: false
-  #         cache-version: v7
+  yarn-install:
+    steps:
+      - node/install:
+          install-yarn: true
+          node-version: 20.11.1
+          yarn-version: 1.22.15
+      - node/install-packages:
+          pkg-manager: yarn
+          include-branch-in-cache-key: false
+          cache-version: v7
 
   assets-precompile:
     steps:
@@ -231,7 +231,7 @@ jobs:
     steps:
       - setup-ruby-ci
       - bundle-install
-      # - yarn-install
+      - yarn-install
       - run: ln -s secrets.yml.development config/secrets.yml
       - assets-precompile
       - persist_to_workspace:
