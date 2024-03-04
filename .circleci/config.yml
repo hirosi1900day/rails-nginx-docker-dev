@@ -73,6 +73,7 @@ commands:
   setup-ruby-ci:
     steps:
       - dependency-install
+      - checkout
 
   bundle-install:
     steps:
