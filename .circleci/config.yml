@@ -75,7 +75,6 @@ commands:
   setup-ruby-ci:
     steps:
       - dependency-install
-      - checkout
 
   bundle-install:
     steps:
@@ -228,6 +227,7 @@ jobs:
       BUNDLE_GEMFILE: << parameters.bundle_gemfile >>
     steps:
       - setup-ruby-ci
+      - checkout
       - bundle-install
       - yarn-install
       - assets-precompile
@@ -243,6 +243,7 @@ jobs:
       BUNDLE_GEMFILE: << parameters.bundle_gemfile >>
     steps:
       - setup-ruby-ci
+      - checkout
       - bundle-install
       - setup-database
       - run:
