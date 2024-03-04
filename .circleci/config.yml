@@ -35,6 +35,8 @@ executors:
           MYSQL_ALLOW_EMPTY_PASSWORD: "true"
           MYSQL_ROOT_HOST: "%"
           PLAYWRIGHT_CHROMIUM_CHANNEL: 'chromium'
+          DB_USER: root
+          DB_HOST: db
 
 commands:
   dependency-install:
@@ -245,7 +247,7 @@ jobs:
 
   rspec:
     executor: rspec
-    parallelism: 12
+    parallelism: 1
     resource_class: medium
     parameters:
       bundle_gemfile:
