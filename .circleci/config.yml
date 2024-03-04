@@ -141,7 +141,10 @@ commands:
     steps:
       - run:
           name: install chromium
-          command: npx playwright install
+          command: |
+            npx playwright install
+            npx playwright install-deps
+            npx playwright --version
       - run:
           name: run RSpec
           environment:
