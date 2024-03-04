@@ -34,7 +34,7 @@ executors:
         environment:
           MYSQL_ALLOW_EMPTY_PASSWORD: "true"
           MYSQL_ROOT_HOST: "%"
-          PLAYWRIGHT_CHROMIUM_CHANNEL: 'chromium'
+          PLAYWRIGHT_CHROMIUM_CHANNEL: 'chrome'
           DB_USER: root
           DB_HOST: db
 
