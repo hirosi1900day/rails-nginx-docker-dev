@@ -77,11 +77,11 @@ commands:
 
   bundle-install:
     steps:
-      - run:
-          name: install dependencies
-          command: |
-            gem install bundler -v 2.0.2
-            bundle install --jobs=4 --retry=3
+      - ruby/install-deps:
+          key: gems-v1
+          with-cache: true
+          clean-bundle: true
+          include-branch-in-cache-key: false
 
   yarn-install:
     steps:
