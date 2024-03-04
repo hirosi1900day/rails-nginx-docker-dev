@@ -233,7 +233,6 @@ jobs:
       - setup-ruby-ci
       - bundle-install
       - yarn-install
-      - run: ln -s secrets.yml.development config/secrets.yml
       - assets-precompile
       - persist_to_workspace:
           root: .
@@ -257,7 +256,6 @@ jobs:
     steps:
       - setup-ruby-ci
       - bundle-install
-      - run: ln -s secrets.yml.development config/secrets.yml
       - setup-database
       - run:
           name: run eager loading check
