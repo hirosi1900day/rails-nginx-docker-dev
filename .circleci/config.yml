@@ -28,7 +28,7 @@ executors:
   rspec:
     docker:
       - <<: *primary
-      - image: cimg/mysql:8.0.29
+      - image: cimg/mysql:8.0.28
         name: db
         command: mysqld --character_set_server=utf8 --sql-mode=NO_ENGINE_SUBSTITUTION
         environment:
