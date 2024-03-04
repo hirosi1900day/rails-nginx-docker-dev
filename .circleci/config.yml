@@ -217,7 +217,6 @@ jobs:
       BUNDLE_GEMFILE: << parameters.bundle_gemfile >>
     steps:
       - setup-ruby-ci
-      - bundle-install
 
   assets:
     executor: default
