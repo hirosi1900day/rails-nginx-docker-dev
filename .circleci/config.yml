@@ -277,7 +277,7 @@ workflows:
             - rb-deps
       - rspec:
           requires:
-            - rb-deps
+            - assets
       - coverage:
           requires:
             - rspec
