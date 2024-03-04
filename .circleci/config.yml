@@ -248,7 +248,6 @@ jobs:
   rspec:
     executor: rspec
     parallelism: 1
-    resource_class: medium
     parameters:
       bundle_gemfile:
         type: string
