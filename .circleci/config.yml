@@ -139,9 +139,9 @@ commands:
         type: integer
         default: 0
     steps:
-      # - run:
-      #     name: install chromium
-      #     command: yarn playwright install chromium
+      - run:
+          name: install chromium
+          command: npx playwright install
       - run:
           name: run RSpec
           environment:
