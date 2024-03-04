@@ -78,13 +78,16 @@ commands:
 
   bundle-install:
     steps:
-      - run: bundle install --jobs=4 --retry=3
+      - ruby/install-deps:
+          key: gems-v1
+          with-cache: true
+          clean-bundle: true
+          include-branch-in-cache-key: false
 
   yarn-install:
     steps:
       - node/install:
-          install-yarn: true
-          node-version: 20.11.1
+          install-yarn: true node-version: 20.11.1
           yarn-version: 1.22.15
       - node/install-packages:
           pkg-manager: yarn
@@ -142,9 +145,8 @@ commands:
       - run:
           name: install chromium
           command: |
-            npx playwright install
-            npx playwright install-deps
-            npx playwright --version
+            yarn run playwright install-deps chrome
+            yarn run playwright install ffmpeg
       - run:
           name: run RSpec
           environment:
@@ -230,6 +232,14 @@ jobs:
       - bundle-install
       - yarn-install
       - assets-precompile
+      - persist_to_workspace:
+          root: .
+          paths:
+          # NOTE: PlaywrightはE2Eテストで利用するため引き継ぐ
+            - "./node_modules/.bin/playwright"
+            - "./node_modules/@playwright"
+            - "./node_modules/playwright"
+            - "./node_modules/playwright-core"
 
   rspec:
     executor: rspec
