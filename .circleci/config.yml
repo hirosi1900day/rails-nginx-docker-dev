@@ -78,11 +78,7 @@ commands:
 
   bundle-install:
     steps:
-      - ruby/install-deps:
-          key: gems-v1
-          with-cache: false
-          clean-bundle: false
-          include-branch-in-cache-key: false
+      - run: bundle install --jobs=4 --retry=3
 
   yarn-install:
     steps:
