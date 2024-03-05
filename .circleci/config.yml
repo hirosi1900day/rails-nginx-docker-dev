@@ -147,7 +147,6 @@ commands:
             yarn install
             yarn run playwright install-deps chrome
             yarn run playwright install ffmpeg
-            npx playwright install
       - run:
           name: run RSpec
           environment:
