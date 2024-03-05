@@ -47,7 +47,7 @@ end
 Capybara.default_max_wait_time = 15
 Capybara.default_driver = :playwright
 Capybara.javascript_driver = :playwright
-Capybara.save_path = 'tmp/downloads'
+# Capybara.save_path = 'tmp/downloads'
 
 # Capybara.server = :puma, { Silent: true }
 
