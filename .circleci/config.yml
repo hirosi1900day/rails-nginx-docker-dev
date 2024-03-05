@@ -144,6 +144,7 @@ commands:
       - run:
           name: install chromium
           command: |
+            yarn install
             yarn run playwright install-deps chrome
             yarn run playwright install ffmpeg
       - run:
