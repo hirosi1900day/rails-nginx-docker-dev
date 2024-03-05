@@ -124,7 +124,7 @@ commands:
             - "./public/packs-test"
             - "./tmp/assets-cache-date"
             - "./tmp/cache/assets"
-            - "./node_modules
+            - "./node_modules"
 
   exec-rspec:
     parameters:
