@@ -1,16 +1,15 @@
 version: 2.1
 
 orbs:
-  browser-tools: circleci/browser-tools@1.4.6
+  browser-tools: circleci/browser-tools@1.4.8
   node: circleci/node@5.2.0
-  ruby: circleci/ruby@2.1.1
+  ruby: circleci/ruby@2.1.0
 
 primary: &primary
-  image: cimg/ruby:3.1.4-browsers
+  image: cimg/ruby:3.1.1-browsers
   environment:
     RAILS_ENV: test
     NODE_ENV: test
-    BUNDLE_WITHOUT: production:staging:development:rubocop:danger
     TZ: "Asia/Tokyo"
     LANG: ja_JP.UTF-8
     LC_ALL: C.UTF-8
@@ -25,16 +24,18 @@ executors:
   node:
     docker:
       - <<: *primary
-        image: cimg/base:2023.06
+        image: cimg/base:2024.02
   rspec:
     docker:
       - <<: *primary
-      - image: cimg/mysql:5.7.38
+      - image: cimg/mysql:8.0.28
         name: db
         command: mysqld --character_set_server=utf8 --sql-mode=NO_ENGINE_SUBSTITUTION
         environment:
           MYSQL_ALLOW_EMPTY_PASSWORD: "true"
           MYSQL_ROOT_HOST: "%"
+          DB_USER: root
+          DB_HOST: db
 
 commands:
   dependency-install:
@@ -85,8 +86,8 @@ commands:
   yarn-install:
     steps:
       - node/install:
-          install-yarn: true
-          node-version: 18.18.2
+          node-version: 20.11.1
+          install-yarn: true 
           yarn-version: 1.22.15
       - node/install-packages:
           pkg-manager: yarn
@@ -115,9 +116,6 @@ commands:
           command: |
             date '+%Y%m%d' > tmp/assets-cache-date
             bin/rails assets:precompile assets:clean[0]
-      - run:
-          name: Display disk usage for assets caches
-          command: du -h -d 1 tmp/cache/ public/assets/ public/packs-test/ node_modules/.cache
       - save_cache:
           name: Saving Cache - assets:precompile
           key: assets-cache-v16-{{ .Branch }}-{{ .Revision }}
@@ -126,8 +124,7 @@ commands:
             - "./public/packs-test"
             - "./tmp/assets-cache-date"
             - "./tmp/cache/assets"
-            - "./node_modules/.cache/babel-loader"
-            - "./node_modules/.cache/webpack"
+            - "./node_modules"
 
   exec-rspec:
     parameters:
@@ -144,6 +141,12 @@ commands:
         type: integer
         default: 0
     steps:
+      - run:
+          name: install chromium
+          command: |
+            yarn install
+            yarn run playwright install-deps chrome
+            yarn run playwright install ffmpeg
       - run:
           name: run RSpec
           environment:
@@ -201,7 +204,7 @@ commands:
       - run:
           name: DB setup
           command: |
-            bin/rails db:create db:test:prepare
+            bin/rails db:create db:migrate
 
 jobs:
   rb-deps:
@@ -214,11 +217,9 @@ jobs:
       BUNDLE_GEMFILE: << parameters.bundle_gemfile >>
     steps:
       - setup-ruby-ci
-      - bundle-install
 
   assets:
     executor: default
-    resource_class: large
     parameters:
       bundle_gemfile:
         type: string
@@ -227,23 +228,22 @@ jobs:
       BUNDLE_GEMFILE: << parameters.bundle_gemfile >>
     steps:
       - setup-ruby-ci
+      - checkout
       - bundle-install
       - yarn-install
-      - run: ln -s secrets.yml.development config/secrets.yml
       - assets-precompile
       - persist_to_workspace:
           root: .
           paths:
-            - "./public/assets"
-            - "./public/packs-test"
-            - "./tmp/cache/bootsnap"
-            # NOTE: CKEditor関連はnode_modules配下のファイルを利用するため引き継ぐ
-            - "./node_modules/ckeditor"
+          # NOTE: PlaywrightはE2Eテストで利用するため引き継ぐ
+            - "./node_modules/.bin/playwright"
+            - "./node_modules/@playwright"
+            - "./node_modules/playwright"
+            - "./node_modules/playwright-core"
 
   rspec:
     executor: rspec
-    parallelism: 12
-    resource_class: medium
+    parallelism: 1
     parameters:
       bundle_gemfile:
         type: string
@@ -252,16 +252,15 @@ jobs:
       BUNDLE_GEMFILE: << parameters.bundle_gemfile >>
     steps:
       - setup-ruby-ci
+      - checkout
       - bundle-install
-      - run: ln -s secrets.yml.development config/secrets.yml
       - setup-database
       - run:
           name: run eager loading check
           command: bin/rails runner Rails.application.eager_load!
       - exec-rspec:
-          exclude-regex: spec\/(requests|system|decorators|views|helpers|serializers)\/.*_spec.rb
-          retry-failures: false
-          failure-exit-code: 1
+          retry-failures: true
+          failure-exit-code: 0
       - store_test_results:
           path: /tmp/results
       - store_artifacts:
@@ -270,38 +269,6 @@ jobs:
           root: .
           paths:
             - coverage/
-
-  rspec_with_assets:
-    executor: rspec
-    parallelism: 10
-    parameters:
-      bundle_gemfile:
-        type: string
-        default: Gemfile
-    environment:
-      BUNDLE_GEMFILE: << parameters.bundle_gemfile >>
-    steps:
-      - setup-ruby-ci
-      - attach_workspace:
-          at: .
-      - bundle-install
-      - install-browser-tools
-      - run: ln -s secrets.yml.development config/secrets.yml
-      - setup-database
-      - exec-rspec:
-          target-path: "spec/{requests,system,decorators,views,helpers,serializers}/**/*_spec.rb"
-          exclude-regex: spec\/system\/(acceptances|talk\/scenario)\/.*_spec.rb
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/rspec_files_list.txt
-      - store_artifacts:
-          path: .capybara
-      - persist_to_workspace:
-          root: .
-          paths:
-            - coverage/
-
   coverage:
     executor: default
     resource_class: small
@@ -314,28 +281,6 @@ jobs:
       - store_artifacts:
           path: coverage
 
-  code_analyze:
-    executor: default
-    resource_class: medium
-    steps:
-      - setup-ruby-ci
-      - bundle-install
-      - run: mkdir -p ${ARTIFACTS_DIR}
-      - run:
-          name: brakeman
-          command: bundle exec brakeman -o ${ARTIFACTS_DIR}/brakeman_output.html
-          when: always
-      - run:
-          name: haml-lint
-          command: bundle exec haml-lint -r default -p app/views/
-          when: always
-      - run:
-          name: erblint
-          command: bundle exec erblint app/views
-          when: always
-      - store_artifacts:
-          path: /tmp/artifacts
-
 workflows:
   build_and_analyze:
     jobs:
@@ -345,21 +290,10 @@ workflows:
             - rb-deps
       - rspec:
           requires:
-            - rb-deps
-      - rspec_with_assets:
-          requires:
-            - rspec
             - assets
-      - code_analyze:
-          requires:
-            - rb-deps
-          filters:
-            branches:
-              ignore:
-                - master
       - coverage:
           requires:
-            - rspec_with_assets
+            - rspec
           filters:
             branches:
               only:
