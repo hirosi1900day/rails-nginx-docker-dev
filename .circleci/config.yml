@@ -34,7 +34,6 @@ executors:
         environment:
           MYSQL_ALLOW_EMPTY_PASSWORD: "true"
           MYSQL_ROOT_HOST: "%"
-          PLAYWRIGHT_CHROMIUM_CHANNEL: 'chrome'
           DB_USER: root
           DB_HOST: db
 
@@ -125,8 +124,7 @@ commands:
             - "./public/packs-test"
             - "./tmp/assets-cache-date"
             - "./tmp/cache/assets"
-            - "./node_modules/.cache/babel-loader"
-            - "./node_modules/.cache/webpack"
+            - "./node_modules
 
   exec-rspec:
     parameters:
