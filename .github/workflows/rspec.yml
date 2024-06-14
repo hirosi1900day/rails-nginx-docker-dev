@@ -12,6 +12,6 @@ jobs:
   rspec:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ github.ref }}
+      - run: echo ${{ github.sha  }}
       - name: Sleep for test
         run: sleep 20
