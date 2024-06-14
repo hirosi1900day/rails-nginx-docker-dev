@@ -40,4 +40,4 @@ jobs:
           file: ecs/Dockerfile
           push: false
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/rails :${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/rails:${{ github.sha }}

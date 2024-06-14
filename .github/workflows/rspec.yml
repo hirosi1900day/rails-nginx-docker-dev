@@ -14,4 +14,4 @@ jobs:
     steps:
       - run: echo ${{ github.sha  }}
       - name: Sleep for test
-        run: sleep 20
+        run: sleep 1
