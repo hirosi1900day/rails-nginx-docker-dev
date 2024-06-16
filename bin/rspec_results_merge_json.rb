@@ -22,7 +22,7 @@ file_paths.each do |file_path|
 end
 
 # summary_line を更新
-merged_data['summary_line'] = "#{merged_data['summary']['example_count']} examples, #{merged_data['summary']['failure_count']} failures"
+merged_data['summary_line'] = "#{merged_data['summary']['example_count']} examples, #{merged_data['summary']['failure_count']} failures, #{merged_data['summary']['pending_count']} pending"
 
 # マージ結果をファイルに保存
 File.open('tmp/rspec/merged_rspec_results.json', 'w') do |file|
