@@ -279,7 +279,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-report-${{ github.sha }}-${{ matrix.id }}
-          path: report
+          path: report/rspec-${{ matrix.id }}.xml
           if-no-files-found: error
           retention-days: 1
         # if: github.ref == 'refs/heads/main'
@@ -289,7 +289,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rspec-results-${{ github.sha }}-${{ matrix.id }}
-          path: rspec_results
+          path: rspec_results/${{ matrix.id }}.json
           retention-days: 1
 
       # - name: Upload coverage reports to Codecov

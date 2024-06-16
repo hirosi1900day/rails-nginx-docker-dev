@@ -4,7 +4,7 @@
 require 'json'
 
 # マージするファイルのパスを取得
-file_paths = Dir.glob('tmp/rspec/results_*.json')
+file_paths = Dir.glob('rspec_results/*_.json')
 
 # 最初のファイルを読み込む
 merged_data = JSON.parse(File.read(file_paths.shift))
