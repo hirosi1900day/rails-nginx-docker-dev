@@ -325,7 +325,7 @@ jobs:
           path: rspec_results
           merge-multiple: true
 
-      - run: ls tmp/rspec
+      - run: ls rspec_results
       - run: ls report
 
       - name: Merge RSpec results
