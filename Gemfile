@@ -24,7 +24,7 @@ gem 'importmap-rails'
 gem 'turbo-rails'
 
 gem 'simplecov', require: false
-gem 'simplecov-cobertura'
+gem 'simplecov-cobertura', require: false
 
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem 'stimulus-rails'
