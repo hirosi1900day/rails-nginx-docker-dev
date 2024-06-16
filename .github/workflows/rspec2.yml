@@ -264,10 +264,10 @@ jobs:
           --format progress \
           --format RspecJunitFormatter \
           --out report/rspec-${{ matrix.id }}.xml \
-          -f j -o tmp/rspec_results_${{ matrix.id }}.json -f p \
+          -f j -o rspec_results/${{ matrix.id }}.json -f p \
           $(./split-test --junit-xml-report-dir report-tmp --node-index ${{ matrix.id }} --node-total ${{ matrix.parallelism }} --tests-glob 'spec/**/*_spec.rb' --debug)
 
-      - run: cat tmp/rspec_results_${{ matrix.id }}.json
+      - run: cat tmp/rspec/results_${{ matrix.id }}.json
         if: always()
       # https://github.com/marketplace/actions/rspec-report
       # - name: RSpec Report
@@ -278,23 +278,28 @@ jobs:
       #     json-path: tmp/rspec_results.json
 
       - name: Upload test report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: test-report
+          name: test-report-${{ github.sha }}-${{ matrix.id }}
           path: report
           if-no-files-found: error
+          retention-days: 1
         # if: github.ref == 'refs/heads/main'
-      
+
       - name: Upload RSpec results
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: rspec-results-${{ github.sha }}
-          path: tmp/rspec_results_${{ matrix.id }}.json
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.0.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          name: rspec-results-${{ github.sha }}-${{ matrix.id }}
+          path: rspec_results
+          retention-days: 1
+
+      # - name: Upload coverage reports to Codecov
+      #   uses: codecov/codecov-action@v4
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #   env:
+      #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   merge-results:
     needs: rspec
@@ -303,22 +308,39 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Setup Ruby with caching
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.ruby-version }}
+      - run: gem install nokogiri
       - name: Download RSpec results
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: rspec-results-${{ github.sha }}
-          path: tmp
+          path: report
+          merge-multiple: true
+      
+      - name: Download RSpec xml results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: rspec-results-${{ github.sha }}-*
+          path: rspec_results
+          merge-multiple: true
+
+      - run: ls tmp/rspec
+      - run: ls report
 
       - name: Merge RSpec results
         run: |
-          chmod +x bin/merge_json.sh
-          bin/merge_json.sh tmp/rspec_results_0.json tmp/rspec_results_1.json > tmp/merged_rspec_results.json
-    # jq -s '[.[][]]' tmp/rspec_results_0.json tmp/rspec_results_1.json > tmp/rspec_results_merged.json
-
-      - run: cat tmp/merged_rspec_results.json
-
-      # - name: RSpec Report
-      #   uses: SonicGarden/rspec-report-action@v1
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     json-path: tmp/rspec_results_merged.json
+          chmod +x bin/rspec_results_merge_json.rb
+          chmod +x bin/merge_rspec_xml.rb
+          ruby bin/rspec_results_merge_json.rb
+          ruby bin/merge_rspec_xml.rb
+      
+      - run: cat tmp/rspec/merged_rspec_results.json
+      - run: cat tmp/rspec/combined_rspec_results.xml
+      - name: RSpec Report
+        uses: SonicGarden/rspec-report-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          json-path: tmp/rspec/merged_rspec_results.json
