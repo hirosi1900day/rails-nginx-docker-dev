@@ -247,7 +247,7 @@ jobs:
           chmod +x split-test
 
       - run: |
-          PATHS=$(./split-test --junit-xml-report-dir report-tmp --node-index "${{ matrix.id }}" --node-total "${{ matrix.parallelism }}" --tests-glob "spec/**/*_spec.rb" | sed "s;^$(pwd)/;;" | tr '\n' ' ')
+          PATHS=$(./split-test --junit-xml-report-dir tmp/rspec --node-index "${{ matrix.id }}" --node-total "${{ matrix.parallelism }}" --tests-glob "spec/**/*_spec.rb" | sed "s;^$(pwd)/;;" | tr '\n' ' ')
           echo "paths=${PATHS}"
 
       - name: Rspec
