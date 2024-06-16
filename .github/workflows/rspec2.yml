@@ -237,8 +237,9 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           branch: test4
-          name: test-report
-          path: report
+          name: test-time-report
+          path: tmp/rspec
+          merge-multiple: true
         continue-on-error: true
 
       - run: |
@@ -265,7 +266,7 @@ jobs:
           --format RspecJunitFormatter \
           --out report/rspec-${{ matrix.id }}.xml \
           -f j -o rspec_results/${{ matrix.id }}.json -f p \
-          $(./split-test --junit-xml-report-dir report-tmp --node-index ${{ matrix.id }} --node-total ${{ matrix.parallelism }} --tests-glob 'spec/**/*_spec.rb' --debug)
+          $(./split-test --junit-xml-report-dir tmp/rspec --node-index ${{ matrix.id }} --node-total ${{ matrix.parallelism }} --tests-glob 'spec/**/*_spec.rb' --debug)
           cat report/rspec-${{ matrix.id }}.xml
 
 
@@ -344,3 +345,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           json-path: tmp/rspec/merged_rspec_results.json
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-time-report
+          path: tmp/rspec/combined_rspec_results.xml
+          retention-days: 7
+          overwrite: true
+       
