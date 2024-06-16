@@ -334,16 +334,14 @@ jobs:
           mkdir rspec_xml
           mv rspec_results/* rspec_xml
 
-      - run: ls rspec_results
+      - run: ls rspec_xml
       - run: ls report
 
       - name: Merge RSpec results
         run: |
           mkdir -p tmp/rspec
           chmod +x bin/rspec_results_merge_json.rb
-          chmod +x bin/merge_rspec_xml.rb
           ruby bin/rspec_results_merge_json.rb
-          ruby bin/merge_rspec_xml.rb
       
       - run: cat tmp/rspec/merged_rspec_results.json
       - run: cat tmp/rspec/combined_rspec_results.xml
