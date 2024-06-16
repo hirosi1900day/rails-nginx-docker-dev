@@ -346,7 +346,7 @@ jobs:
       - run: cat tmp/rspec/merged_rspec_results.json
       # - run: cat tmp/rspec/combined_rspec_results.xml
       - name: RSpec Report
-        uses: SonicGarden/rspec-report-action@v1
+        uses: SonicGarden/rspec-report-action@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           json-path: tmp/rspec/merged_rspec_results.json
