@@ -330,6 +330,7 @@ jobs:
 
       - name: Merge RSpec results
         run: |
+          mkdir -p tmp/rspec
           chmod +x bin/rspec_results_merge_json.rb
           chmod +x bin/merge_rspec_xml.rb
           ruby bin/rspec_results_merge_json.rb
