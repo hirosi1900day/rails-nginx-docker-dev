@@ -268,7 +268,7 @@ jobs:
           --out report/rspec-${{ matrix.id }}.xml \
           -f j -o rspec_results/${{ matrix.id }}.json -f p \
           $(./split-test --junit-xml-report-dir tmp/rspec --node-index ${{ matrix.id }} --node-total ${{ matrix.parallelism }} --tests-glob 'spec/**/*_spec.rb' --debug)
-          cat ./coverage/coverage.xml
+          ls ./coverage
 
 
       # https://github.com/marketplace/actions/rspec-report
