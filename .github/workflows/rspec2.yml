@@ -258,6 +258,7 @@ jobs:
           MYSQL_PASSWORD: root
           REDIS_URL: redis://127.0.0.1:6379
           TEST_ELASTICSEARCH_URL: http://127.0.0.1:9200
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           bin/rails db:create
           bin/rails db:migrate
@@ -267,7 +268,7 @@ jobs:
           --out report/rspec-${{ matrix.id }}.xml \
           -f j -o rspec_results/${{ matrix.id }}.json -f p \
           $(./split-test --junit-xml-report-dir tmp/rspec --node-index ${{ matrix.id }} --node-total ${{ matrix.parallelism }} --tests-glob 'spec/**/*_spec.rb' --debug)
-          cat report/rspec-${{ matrix.id }}.xml
+          cat ./coverage/coverage.xml
 
 
       # https://github.com/marketplace/actions/rspec-report
