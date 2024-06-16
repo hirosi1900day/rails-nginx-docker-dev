@@ -16,6 +16,7 @@ jobs:
   rspec:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         parallelism: [2]
         id: [0, 1]
@@ -317,7 +318,9 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.ruby-version }}
-      - run: gem install nokogiri
+      - run: |
+          gem install nokogiri
+          gem install fileutils
       - name: Download RSpec results
         uses: actions/download-artifact@v4
         with:
@@ -343,7 +346,7 @@ jobs:
         run: |
           mkdir -p tmp/rspec
           chmod +x bin/rspec_results_merge_json.rb
-          ruby bin/rspec_results_merge_json.rb
+          ruby rspec_results_merge_json.rb "report" "tmp/rspec/merged_rspec_results.json"
       
       - run: cat tmp/rspec/merged_rspec_results.json
       # - run: cat tmp/rspec/combined_rspec_results.xml
