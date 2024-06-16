@@ -271,13 +271,13 @@ jobs:
           ls ./coverage
 
 
-      # https://github.com/marketplace/actions/rspec-report
-      # - name: RSpec Report
-      #   if: always()
-      #   uses: SonicGarden/rspec-report-action@v1
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     json-path: tmp/rspec_results.json
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/coverage.xml
+          fail_ci_if_error: true
+          verbose: true
 
       - name: Upload test report
         uses: actions/upload-artifact@v4
