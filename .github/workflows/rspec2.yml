@@ -356,7 +356,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           json-path: tmp/rspec/merged_rspec_results.json
       - name: Upload test report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v1
         with:
           name: test-time-report
           path: rspec_xml
