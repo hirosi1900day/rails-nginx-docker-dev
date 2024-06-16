@@ -344,7 +344,7 @@ jobs:
           ruby bin/rspec_results_merge_json.rb
       
       - run: cat tmp/rspec/merged_rspec_results.json
-      - run: cat tmp/rspec/combined_rspec_results.xml
+      # - run: cat tmp/rspec/combined_rspec_results.xml
       - name: RSpec Report
         uses: SonicGarden/rspec-report-action@v1
         with:
