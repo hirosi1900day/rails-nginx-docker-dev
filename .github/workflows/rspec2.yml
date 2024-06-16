@@ -314,7 +314,7 @@ jobs:
       - name: Download RSpec results
         uses: actions/download-artifact@v4
         with:
-          name: rspec-results-${{ github.sha }}
+          pattern: rspec-results-${{ github.sha }}-*
           path: report
           merge-multiple: true
       
