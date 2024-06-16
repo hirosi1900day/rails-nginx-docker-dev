@@ -4,7 +4,7 @@
 require 'nokogiri'
 
 # 結合するXMLファイルのパスを配列で指定
-xml_files = Dir.glob('report/rspec-*.xml')
+xml_files = Dir.glob('rspec_results/rspec-*.xml')
 
 # 最初のファイルをベースとして読み込む
 combined_doc = Nokogiri::XML(File.read(xml_files.shift))
