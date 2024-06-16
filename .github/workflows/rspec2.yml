@@ -243,7 +243,7 @@ jobs:
         continue-on-error: true
 
       - run: ls rspec_xml
-      
+
       - run: |
           curl -L --output split-test https://github.com/mtsmfm/split-test/releases/download/v1.0.0/split-test-x86_64-unknown-linux-gnu
           chmod +x split-test
@@ -330,7 +330,9 @@ jobs:
           path: rspec_results
           merge-multiple: true
 
-      - run: mv rspec_results/* rspec_xml
+      - run: |
+          mkdir rspec_xml
+          mv rspec_results/* rspec_xml
 
       - run: ls rspec_results
       - run: ls report
