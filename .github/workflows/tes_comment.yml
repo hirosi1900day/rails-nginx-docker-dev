@@ -1,13 +1,11 @@
-name: rspec
+name: rspec-comment
+
 
 on:
   pull_request:
   # issue_comment:
   #   types: [created]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref }}
-  cancel-in-progress: true
 
 permissions:
   contents: read
