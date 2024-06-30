@@ -2,7 +2,7 @@ name: rspec-comment
 
 
 on:
-  pull_request:
+  push:
   # issue_comment:
   #   types: [created]
 
