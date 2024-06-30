@@ -23,7 +23,7 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-      - run: is | grep test_data.json
+      - run: ls | grep test_data.json
       - name: RSpec Report
         uses: hirosi1900day/test-report@v1
         with:
