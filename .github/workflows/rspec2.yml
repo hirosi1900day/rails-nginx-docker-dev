@@ -250,13 +250,13 @@ jobs:
 
       - run: bundle install --jobs=3 --retry=3 --path vendor/bundle
 
-      - name: Download test report
-        uses: actions/download-artifact@v4
-        with:
-          name: test-time-report
-          path: rspec_xml
-          merge-multiple: true
-        continue-on-error: true
+      # - name: Download test report
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: test-time-report
+      #     path: rspec_xml
+      #     merge-multiple: true
+      #   continue-on-error: true
 
       - run: ls rspec_xml
 
