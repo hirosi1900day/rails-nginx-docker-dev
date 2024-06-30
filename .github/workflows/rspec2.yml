@@ -248,10 +248,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
 
-      - run:
-          name: install dependencies
-          command: |
-            bundle install --jobs=3 --retry=3 --path vendor/bundle
+      - run: bundle install --jobs=3 --retry=3 --path vendor/bundle
 
       - name: Download test report
         uses: actions/download-artifact@v4
