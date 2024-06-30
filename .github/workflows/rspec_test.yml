@@ -1,0 +1,251 @@
+name: rspec-test
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: write
+
+jobs:
+  rspec:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        parallelism: [2]
+        id: [0, 1]
+    outputs:
+      result_0: ${{ steps.collect.outputs.rspec_results }}
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: ava_test
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 3306:3306
+
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli -h localhost ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y libmagickwand-dev
+          sudo apt-get install -y fonts-ipafont \
+          graphviz \
+          fonts-ipafont-mincho \
+          fonts-ipafont-gothic \
+          fonts-ipamj-mincho \
+          fonts-ipaexfont-mincho \
+          fonts-ipaexfont-gothic \
+          fonts-ipaexfont
+          WKHTMLTOPDF_TAG="0.12.6.1-2"
+          WKHTMLTOPDF_FILE="wkhtmltox_0.12.6.1-2.jammy_amd64.deb"
+          WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/packaging/releases/download/${WKHTMLTOPDF_TAG}/${WKHTMLTOPDF_FILE}"
+          sudo wget -q ${WKHTMLTOPDF_URL} \
+          && sudo apt install -y -f ./${WKHTMLTOPDF_FILE} \
+          && sudo rm ${WKHTMLTOPDF_FILE}
+          # 以下デバッグ用
+          wkhtmltopdf --version
+          whereis wkhtmltopd
+          OS_VERSION=$(ruby -e 'puts `. /etc/os-release 2> /dev/null && echo ${ID}_${VERSION_ID}`.strip')
+          echo $OS_VERSION
+          echo $BUILDPLATFORM
+          ls /usr/local/bin
+          html_content='
+          <!DOCTYPE html>
+          <html lang="ja">
+          <head>
+              <meta charset="utf-8">
+               <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+              <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP" rel="stylesheet">
+              <style>
+                  table {
+                      width: 100%;
+                      font-size: 18px;
+                      border-collapse: collapse;
+                      white-space: pre-wrap;
+                      word-wrap: break-word;
+                  }
+                  td {
+                      border: 1px solid black;
+                      padding: 4px;
+                  }
+                  .align-center {
+                      text-align: center;
+                  }
+              </style>
+              <title>労働条件通知書</title>
+          </head>
+          <body>
+              <h1 class="align-center">労働条件通知書</h1>
+              <table class="table table-bordered table-striped">
+                  <tr>
+                      <td>使用者</td>
+                      <td>株式会社サンプル</td>
+                  </tr>
+                  <tr>
+                      <td>使用者所在地</td>
+                      <td>東京都千代田区丸の内1-1-1</td>
+                  </tr>
+                  <tr>
+                      <td>就労日</td>
+                      <td>2024年06月01日</td>
+                  </tr>
+                  <tr>
+                      <td>契約更新の有無／試用期間の有無</td>
+                      <td>無し</td>
+                  </tr>
+                  <tr>
+                      <td>労働契約の期間に関する事項</td>
+                      <td>就労日当日に限る</td>
+                  </tr>
+                  <tr>
+                      <td>就業場所</td>
+                      <td>東京都港区芝公園4-2-8</td>
+                  </tr>
+                  <tr>
+                      <td>従事すべき業務の内容</td>
+                      <td>ソフトウェア開発</td>
+                  </tr>
+                  <tr>
+                      <td>始業、終業の時刻</td>
+                      <td>
+                          始業 2024年06月01日 09:00<br>
+                          終業 2024年06月01日 18:00
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>休憩時間</td>
+                      <td>60分</td>
+                  </tr>
+                  <tr>
+                      <td>所定時間外労働の有無に関する事項</td>
+                      <td>有り</td>
+                  </tr>
+                  <tr>
+                      <td>基本賃金</td>
+                      <td>時間給 (1500円)</td>
+                  </tr>
+                  <tr>
+                      <td>諸手当の額</td>
+                      <td>交通費実費 ただし、3000円 まで</td>
+                  </tr>
+                  <tr>
+                      <td rowspan="2">所定時間外労働に対して支払われる割増賃金</td>
+                      <td>法定超 25%</td>
+                  </tr>
+                  <tr>
+                      <td>深夜割増 25%</td>
+                  </tr>
+                  <tr>
+                      <td>賃金支払日</td>
+                      <td>月末締め翌月15日 但し、前払い申請があった場合は都度支給日より前に支払うほか、システム都合により支給日より前に支払うことがある。</td>
+                  </tr>
+                  <tr>
+                      <td>賃金の支払方法</td>
+                      <td>労働者指定の銀行口座への振込にて全額支払う</td>
+                  </tr>
+                  <tr>
+                      <td>昇給、退職手当、賞与の有無</td>
+                      <td>無し</td>
+                  </tr>
+                  <tr>
+                      <td>休日・休暇</td>
+                      <td>無し</td>
+                  </tr>
+                  <tr>
+                      <td>社会保険等</td>
+                      <td>労災保険の適用あり。雇用保険、健康保険及び厚生年金の適用無し。</td>
+                  </tr>
+                  <tr>
+                      <td>解雇の事由</td>
+                      <td>
+                          ①身体又は精神の障害により業務に耐えられないと認められるとき<br>
+                          ②勤怠不良で改善の見込みがないとき<br>
+                          ③事業の縮小その他やむを得ない事業場の都合により必要が生じたとき<br>
+                          ④労働中に撮影した画像・動画等のコンテンツを許可なくSNS等のWEB上に投稿したとき<br>
+                          ⑤SNS等のWEB上において、使用者や使用者の商品、役務提供、顧客についての誹謗中傷となる投稿等をしたとき<br>
+                          ⑥使用者の営業秘密を漏えいしたとき<br>
+                          ⑦その他前各号に準ずるやむを得ない事由が生じたとき
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>雇用管理の改善等に関する事項に係る相談窓口</td>
+                      <td>事業場の長</td>
+                  </tr>
+                  <tr>
+                      <td>受動喫煙防止</td>
+                      <td>その他</td>
+                  </tr>
+                  <tr>
+                      <td>喫煙エリアでの勤務</td>
+                      <td>無</td>
+                  </tr>
+                  <tr>
+                      <td>その他</td>
+                      <td>
+                          解雇の事由④～⑥の行為は勤務後も行ってはなりません。<br>
+                          雇用契約は、原則として、業務先において、出勤時にQRコードなどを読み込むことで締結され、また、退勤時にQRコードなどを読み込むことで終了します。<br>
+                          QRコードなどの読み取りがない場合でも、雇用契約は就労受け入れ時に成立し、業務終了時に終了します。
+                      </td>
+                  </tr>
+              </table>
+          </body>
+          </html>
+          '
+
+          # HTMLファイルを作成
+          echo "$html_content" > example.html
+
+          # wkhtmltopdfを使ってPDFに変換
+          wkhtmltopdf --encoding UTF-8 --enable-local-file-access example.html output.pdf
+
+      # - uses: ruby/setup-ruby@v1
+      #   with:
+      #     ruby-version: 3.1.1
+      #     bundler-cache: true
+
+      # - name: Run Elasticsearch
+      #   uses: elastic/elastic-github-actions/elasticsearch@master
+      #   with:
+      #     stack-version: 7.13.3
+      #     plugins: analysis-kuromoji
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.1
+      - name: Cache Gems
+        uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-v1-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-v1-
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+
+      - run: bundle install --jobs=3 --retry=3 --path vendor/bundle
