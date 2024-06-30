@@ -223,16 +223,35 @@ jobs:
           # wkhtmltopdfを使ってPDFに変換
           wkhtmltopdf --encoding UTF-8 --enable-local-file-access example.html output.pdf
 
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.1.1
-          bundler-cache: true
+      # - uses: ruby/setup-ruby@v1
+      #   with:
+      #     ruby-version: 3.1.1
+      #     bundler-cache: true
 
       # - name: Run Elasticsearch
       #   uses: elastic/elastic-github-actions/elasticsearch@master
       #   with:
       #     stack-version: 7.13.3
       #     plugins: analysis-kuromoji
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.1
+      - name: Cache Gems
+        uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-v1-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-v1-
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+
+      - run:
+          name: install dependencies
+          command: |
+            bundle install --jobs=3 --retry=3 --path vendor/bundle
 
       - name: Download test report
         uses: actions/download-artifact@v4
