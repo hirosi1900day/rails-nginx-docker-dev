@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   check-comment:
-    if: github.event_name == 'issue_comment' && github.event.comment.body == '/result'
+    # if: github.event_name == 'issue_comment' && github.event.comment.body == '/result'
     runs-on: ubuntu-latest
     steps:
       - name: Trigger RSpec job
