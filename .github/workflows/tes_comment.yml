@@ -1,0 +1,74 @@
+name: rspec
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: write
+
+jobs:
+  check-comment:
+    if: github.event_name == 'issue_comment' && github.event.comment.body == '/result'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger RSpec job
+        run: echo "RSpec results will be processed."
+
+  merge-results:
+    if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.comment.body == '/result')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Ruby with caching
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.ruby-version }}
+      - run: |
+          gem install nokogiri
+          gem install fileutils
+          gem install optparse
+
+      - name: Download RSpec results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: rspec-results-8ab40a4cfa7e894e0ae966a3328bfcb755b720f2-*
+          path: report
+          merge-multiple: true
+      
+      - name: Download RSpec xml results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-report-8ab40a4cfa7e894e0ae966a3328bfcb755b720f2-*
+          path: rspec_results
+          merge-multiple: true
+
+      - run: |
+          mkdir rspec_xml
+          mv rspec_results/* rspec_xml
+
+      - run: ls rspec_xml
+      - run: ls report
+
+      - name: Merge RSpec results
+        run: |
+          mkdir -p tmp/rspec
+          chmod +x bin/rspec_results_merge_json.rb
+          ruby bin/rspec_results_merge_json.rb --input_dir "report" --output_file "tmp/rspec/merged_rspec_results.json"
+      
+      - run: cat tmp/rspec/merged_rspec_results.json
+      # - run: cat tmp/rspec/combined_rspec_results.xml
+      - name: RSpec Report
+        uses: SonicGarden/rspec-report-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          json-path: tmp/rspec/merged_rspec_results.json

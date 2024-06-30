@@ -18,12 +18,14 @@ services:
       - .:/myapp
       - public-data:/myapp/public
       - tmp-data:/myapp/tmp
-    command: /bin/bash -c "bundle install && rm -f tmp/pids/server.pid && bundle exec puma -C config/puma.rb"
     environment:
       TZ: Asia/Tokyo
       RAILS_ENV: development
       DB_HOST: db
       DB_USER: root
+      MYSQL_PASSWORD: password
+      MYSQL_USERNAME: root
+      MYSQL_HOST: db
       MYSQL_ROOT_PASSWORD: password
     ports:
       - "3000:3000"
