@@ -24,7 +24,7 @@ jobs:
         run: echo "RSpec results will be processed."
 
   merge-results:
-    need: check-comment
+    needs: check-comment
     if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.comment.body == '/result')
     runs-on: ubuntu-latest
 
