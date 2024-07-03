@@ -16,23 +16,28 @@ jobs:
       - name: Trigger RSpec job
         run: echo "RSpec results will be processed."
 
-  merge-results:
-    # needs: check-comment
-    # if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.comment.body == '/result')
+  generate-token:
     runs-on: ubuntu-latest
-
+    outputs:
+      token: ${{ steps.generate_token.outputs.token }}
     steps:
-      - uses: actions/checkout@v3
-      - run: ls | grep test_data.json
       - name: Generate token
         id: generate_token
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+  merge-results:
+    needs: generate-token
+    # if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.comment.body == '/result')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - run: ls | grep test_data.json
       - name: RSpec Report
         uses: hirosi1900day/test-report@v1.1
         with:
-          token: ${{ steps.generate_token.outputs.token }}
+          token: ${{ needs.generate-token.outputs.token }}
           json-path: test_data.json
           pr-number: "125"
