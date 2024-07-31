@@ -1,4 +1,5 @@
 name: Deploy Application
+run-name: "echo by @${{ github.actor }} on ${{ github.event.head_commit.timestamp }} (Commit: ${{ github.sha }})""
 
 on:
   workflow_run:
