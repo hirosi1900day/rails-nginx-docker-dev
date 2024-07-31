@@ -1,5 +1,5 @@
 name: Deploy Application
-
+run-name: "echo by @${{ github.actor }} (Commit: ${{ github.sha }})"
 on:
   workflow_run:
     workflows: ["RSpec-Tests"]
