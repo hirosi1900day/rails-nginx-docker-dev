@@ -57,15 +57,15 @@ jobs:
           });
           return pullRequest.head.sha;
 
-    test:
-      runs-on: ubuntu-latest
-      needs: setup
-      if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start-qa')
-      steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ needs.setup.outputs.head_sha }}
+  test:
+    runs-on: ubuntu-latest
+    needs: setup
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start-qa')
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ needs.setup.outputs.head_sha }}
 
-      - name: git log
-        run: git log -1
+    - name: git log
+      run: git log -1
