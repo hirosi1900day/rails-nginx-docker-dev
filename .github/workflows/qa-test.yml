@@ -11,60 +11,61 @@ permissions:
   deployments: write
 
 
-setup:
-  runs-on: ubuntu-latest
-  timeout-minutes: 5
-  if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start-qa')
-  outputs:
-    head_sha: ${{ steps.find-sha.outputs.result }}
-
-  steps:
-  - name: Create a reaction
-    uses: actions/github-script@v6
-    with:
-      script: |
-        await github.rest.reactions.createForIssueComment({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          comment_id: context.payload.comment.id,
-          content: "+1",
-        });
-
-  - name: Add QA label
-    uses: actions/github-script@v6
-    with:
-      script: |
-        await github.rest.issues.addLabels({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          issue_number: context.issue.number,
-          labels: [
-            'QA',
-          ],
-        });
-
-  - name: Find sha from pull request
-    id: find-sha
-    uses: actions/github-script@v6
-    with:
-      result-encoding: string
-      script: |
-        const { data: pullRequest } = await github.rest.pulls.get({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          pull_number: context.issue.number,
-        });
-        return pullRequest.head.sha;
-
-  test:
+jobs:
+  setup:
     runs-on: ubuntu-latest
-    needs: setup
+    timeout-minutes: 5
     if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start-qa')
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-        ref: ${{ needs.setup.outputs.head_sha }}
+    outputs:
+      head_sha: ${{ steps.find-sha.outputs.result }}
 
-    - name: git log
-      run: git log -1
+    steps:
+    - name: Create a reaction
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.reactions.createForIssueComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            comment_id: context.payload.comment.id,
+            content: "+1",
+          });
+
+    - name: Add QA label
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.issues.addLabels({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            labels: [
+              'QA',
+            ],
+          });
+
+    - name: Find sha from pull request
+      id: find-sha
+      uses: actions/github-script@v6
+      with:
+        result-encoding: string
+        script: |
+          const { data: pullRequest } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+          });
+          return pullRequest.head.sha;
+
+    test:
+      runs-on: ubuntu-latest
+      needs: setup
+      if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start-qa')
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.setup.outputs.head_sha }}
+
+      - name: git log
+        run: git log -1
