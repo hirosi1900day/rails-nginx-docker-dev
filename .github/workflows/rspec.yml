@@ -2,8 +2,6 @@ name: RSpec-Tests
 
 on:
   push:
-    branches:
-      - master
   pull_request:
     branches:
       - '**'

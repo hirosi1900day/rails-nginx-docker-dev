@@ -13,6 +13,7 @@ ENV APP_PATH /myapp
 
 RUN mkdir $APP_PATH
 WORKDIR $APP_PATH
+ENV BUNDLE_PATH /myapp/vendor/bundle
 
 COPY Gemfile $APP_PATH/Gemfile
 COPY Gemfile.lock $APP_PATH/Gemfile.lock
@@ -32,6 +33,6 @@ VOLUME /myapp/tmp
 COPY entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
-CMD /bin/bash -c "bundle install && rm -f tmp/pids/server.pid && bundle exec puma -C config/puma.rb"
+CMD /bin/bash -c "bundle install && rm -f tmp/pids/server.pid && bundle exec rails server"
 
 
