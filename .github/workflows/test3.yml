@@ -1,0 +1,43 @@
+name: Test3
+
+on:
+  pull_request:
+
+
+
+permissions:
+  statuses: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - run: |
+          HASH=$(git log --pretty=format:"%H" -n 2 | tail -n 1)
+          echo $HASH
+          echo ${{ github.sha }}
+      - name: Get latest commit sha on master branch
+        id: sha
+        run: |
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/statuses/${{ github.sha }} \
+            -f state=success \
+            -f target_url=https://example.com/build/status \
+            -f description="The build succeeded!" \
+            -f context=continuous-integration/jenkins
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+
+
+  

@@ -1,0 +1,29 @@
+name: Test
+
+on:
+  push:
+
+permissions:
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    if: github.event_name == 'pushsss'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+    - name: Create a release pull request
+      env:
+        TZ: Asia/Tokyo
+        GIT_PR_RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GIT_PR_RELEASE_BRANCH_PRODUCTION: master
+        GIT_PR_RELEASE_BRANCH_STAGING:  develop
+        GIT_PR_RELEASE_TEMPLATE: .github/.git-pr-template
+        GIT_PR_RELEASE_LABELS: "Waiting for Approve"
+      run: |
+        gem install --no-document git-pr-release -v "2.1.2"
+        git-pr-release --no-fetch || echo "Done."
