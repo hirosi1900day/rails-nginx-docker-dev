@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
       - run: |
           HASH=$(git log --pretty=format:"%H" -n 2 | tail -n 1)
           echo $HASH
