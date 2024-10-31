@@ -3,7 +3,8 @@ name: Test3
 on:
   push:
 
-permissions: write-all
+permissions:
+  statuses: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
