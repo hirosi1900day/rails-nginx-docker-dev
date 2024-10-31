@@ -1,7 +1,9 @@
 name: Test3
 
 on:
-  push:
+  pull_request:
+
+
 
 permissions:
   statuses: write
