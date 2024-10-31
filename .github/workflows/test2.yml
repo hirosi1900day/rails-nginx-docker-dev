@@ -1,0 +1,24 @@
+name: Test2
+
+on:
+  push:
+
+permissions: write-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+    - uses: actions/checkout@v3
+    - run: sleep 10
+    - uses: ouzi-dev/commit-status-updater@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: "Test"
+        state: success
+        description: "Test passed"
