@@ -16,6 +16,7 @@ jobs:
   test2:
     runs-on: ubuntu-latest
     steps:
+      - run: echo ${{ github.sha }}
       - name: Get latest commit sha on master branch
         id: sha
         run: |
