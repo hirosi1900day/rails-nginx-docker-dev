@@ -2,6 +2,7 @@ name: Test
 
 on:
   push:
+
 permissions:
   pull-requests: write
 
@@ -11,12 +12,11 @@ concurrency:
 
 jobs:
   test:
+    if: github.event_name == 'pushsss'
     runs-on: ubuntu-latest
     timeout-minutes: 3
-
     steps:
     - name: Create a release pull request
-      if: github.event_name == 'pushsss'
       env:
         TZ: Asia/Tokyo
         GIT_PR_RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
