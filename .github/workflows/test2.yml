@@ -15,10 +15,10 @@ jobs:
     timeout-minutes: 3
     steps:
     - uses: actions/checkout@v3
-    - run: sleep 10
-    - uses: ouzi-dev/commit-status-updater@v2
+    - name: Add commit status
+      uses: octodemo-resources/github-commit-status@v1
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        name: "Test"
+        context: unit_test_results
         state: success
-        description: "Test passed"
+        description: Tests passed
+        target_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
