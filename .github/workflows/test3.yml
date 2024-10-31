@@ -16,7 +16,9 @@ jobs:
   test2:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ github.sha }}
+      - run: |
+          HASH=$(git log --pretty=format:"%H" -n 2 | tail -n 1)
+          echo $HASH
       - name: Get latest commit sha on master branch
         id: sha
         run: |
