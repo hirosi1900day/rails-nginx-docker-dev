@@ -24,4 +24,5 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             /repos/hirosi1900day/rails-nginx-docker-dev/dispatches \
             -f event_type="trigger-workflow" \
-            -F client_payload='{"commit_hash":"'"${GITHUB_SHA}"'"}'
+            -F client_payload="{\"commit_hash\":\"${GITHUB_SHA}\"}"
+
