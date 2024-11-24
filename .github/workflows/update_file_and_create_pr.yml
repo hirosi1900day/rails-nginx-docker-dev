@@ -1,11 +1,8 @@
 name: Update File and Create PR
 
 on:
-  workflow_dispatch:
-    inputs:
-      merge_commit:
-        description: "The merge commit hash to update"
-        required: true
+  repository_dispatch:
+    types: [trigger-workflow]
 
 jobs:
   update-file:
@@ -16,8 +13,8 @@ jobs:
 
       - name: Update file with merge commit hash
         run: |
-          echo "Updating with merge commit hash: ${{ github.event.inputs.merge_commit }}"
-          echo "${{ github.event.inputs.merge_commit }}" > merge_commit.txt
+          echo "Updating with merge commit hash: ${{ github.event.client_payload.commit_hash }}"
+          echo "${{ github.event.client_payload.commit_hash }}" > merge_commit.txt
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b update-merge-commit

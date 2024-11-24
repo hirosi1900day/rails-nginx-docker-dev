@@ -15,20 +15,13 @@ jobs:
       - name: Build Docker Image
         run: docker build -t my-app:latest .
 
-      - name: Trigger downstream workflow
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { owner, repo } = github.context.repo;
-            await github.rest.actions.createWorkflowDispatch({
-              owner,
-              repo,
-              workflow_id: "update_file_and_create_pr.yml",
-              ref: "master",
-              inputs: {
-                commit_hash: process.env.commit
-              }
-            });
+      - name: Trigger Repository Dispatch
         env:
-          GH_REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          gh api \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/dispatches \
+            -f event_type="trigger-workflow" \
+            -F client_payload="{\"commit_hash\":\"${GITHUB_SHA}\"}"
