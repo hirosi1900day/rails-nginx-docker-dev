@@ -29,3 +29,6 @@ jobs:
                 commit_hash: process.env.commit
               }
             });
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
