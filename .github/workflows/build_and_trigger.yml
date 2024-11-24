@@ -1,0 +1,35 @@
+name: Build and Trigger
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: docker build -t my-app:latest .
+
+      - name: Get latest commit hash
+        id: get_commit
+        run: echo "commit=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+      - name: Trigger downstream workflow
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { owner, repo } = github.context.repo;
+            await github.rest.actions.createWorkflowDispatch({
+              owner,
+              repo,
+              workflow_id: "update_file_and_create_pr.yml",
+              ref: "master",
+              inputs: {
+                commit_hash: process.env.commit
+              }
+            });
