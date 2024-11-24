@@ -15,10 +15,6 @@ jobs:
       - name: Build Docker Image
         run: docker build -t my-app:latest .
 
-      - name: Get latest commit hash
-        id: get_commit
-        run: echo "commit=$(git rev-parse HEAD)" >> $GITHUB_ENV
-
       - name: Trigger downstream workflow
         uses: actions/github-script@v6
         with:
