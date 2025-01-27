@@ -1,0 +1,20 @@
+name: Called Workflow
+
+on:
+  workflow_call:
+    inputs:
+      concurrency_group:
+        required: true
+        type: string
+
+jobs:
+  job-1:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ inputs.concurrency_group }}
+      cancel-in-progress: true
+    steps:
+      - run: echo "Running job-1"
+      - run: sleep 30  # 長時間実行するジョブをシミュレーション
+
+  
