@@ -6,7 +6,6 @@ on:
       concurrency_group:
         required: true
         type: string
-
 jobs:
   job-1:
     runs-on: ubuntu-latest
