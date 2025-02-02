@@ -8,6 +8,7 @@ jobs:
     uses: ./.github/workflows/called-workflow.yml
     with:
       concurrency_group: example-group
+      cancel-in-progress: true
 
   job3:
     runs-on: ubuntu-latest

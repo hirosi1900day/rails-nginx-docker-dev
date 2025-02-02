@@ -6,12 +6,15 @@ on:
       concurrency_group:
         required: true
         type: string
+      cancel-in-progress:
+        required: false
+        type: boolean
 jobs:
   job-1:
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ inputs.concurrency_group }}
-      cancel-in-progress: true
+      cancel-in-progress: ${{ inputs.cancel-in-progress }}
     steps:
       - run: echo "Running job-1"
       - run: sleep 30  # 長時間実行するジョブをシミュレーション
