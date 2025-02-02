@@ -11,7 +11,6 @@ jobs:
       cancel-in-progress: true
 
   job3:
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/_test2.yml
     with:
       concurrency_group: example-group2
