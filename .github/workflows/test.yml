@@ -5,7 +5,7 @@ on:
 
 jobs:
   call-workflow: 
-    uses: ./.github/workflows/called-workflow.yml
+    uses: ./.github/workflows/_test.yml
     with:
       concurrency_group: example-group
       cancel-in-progress: true
