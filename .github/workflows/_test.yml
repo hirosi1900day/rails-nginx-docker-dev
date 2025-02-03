@@ -2,13 +2,7 @@ name: Called Workflow
 
 on:
   workflow_call:
-    inputs:
-      concurrency_group:
-        required: true
-        type: string
-      cancel-in-progress:
-        required: false
-        type: boolean
+
 jobs:
   job-1:
     runs-on: ubuntu-latest
