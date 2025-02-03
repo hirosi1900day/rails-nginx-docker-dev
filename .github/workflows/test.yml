@@ -9,9 +9,6 @@ jobs:
     concurrency:
       group: test
       cancel-in-progress: true
-    with:
-      concurrency_group: example-group
-      cancel-in-progress: true
 
   job3:
     needs: call-workflow
