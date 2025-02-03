@@ -13,6 +13,7 @@ jobs:
   job3:
     needs: call-workflow
     uses: ./.github/workflows/_test2.yml
-    with:
-      concurrency_group: example-group2
+    concurrency:
+      group: test2
+      cancel-in-progress: false
 
