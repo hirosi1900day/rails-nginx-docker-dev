@@ -12,13 +12,13 @@ on:
 jobs:
   job-1:
     runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ inputs.concurrency_group }}
-      cancel-in-progress: ${{ inputs.cancel-in-progress }}
+    # concurrency:
+    #   group: ${{ inputs.concurrency_group }}
+    #   cancel-in-progress: ${{ inputs.cancel-in-progress }}
     steps:
       - run: echo "Running job-1"
       - run: sleep 1  # 長時間実行するジョブをシミュレーション
 
-      
+
 
   
