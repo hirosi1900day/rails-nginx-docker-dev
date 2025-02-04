@@ -13,12 +13,6 @@ jobs:
   check-latest-commit:
     runs-on: ubuntu-22.04
     steps:
-      - name: Skip Check if latest_check is false
-        if: ${{ inputs.latest_check == false }}
-        run: |
-          echo "Skipping latest commit check."
-          exit 0
-
       - name: Compare Commits
         run: |
           if [ ${{ inputs.latest_check == false }} ]; then
