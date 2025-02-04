@@ -6,16 +6,10 @@ on:
 jobs:
   call-workflow: 
     uses: ./.github/workflows/_test.yml
-    concurrency:
-      group: test
-      cancel-in-progress: true
 
   call-workflow2: 
     uses: ./.github/workflows/_test.yml
     with:
       latest_check: true
-    concurrency:
-      group: test
-      cancel-in-progress: true
      
 
