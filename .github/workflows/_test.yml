@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Compare Commits
         run: |
-          if [ "${{ inputs.latest_check }}" == "false ]; then
+          if [ "${{ inputs.latest_check }}" == "false" ]; then
             echo "not check latest commit"
             exit 0
           fi
