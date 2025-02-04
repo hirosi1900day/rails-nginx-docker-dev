@@ -20,11 +20,11 @@ jobs:
             exit 0
           fi
           echo "CURRENT_COMMIT=${{ github.sha }}"
-          LATEST_COMMIT=$(gh api repos/${{ github.repository }}/commits/master --jq '.sha')
+          LATEST_COMMIT=hoge
           echo "LATEST_COMMIT=$LATEST_COMMIT"
 
           # 古いcommitの場合はエラーを返す
-          if [ "${{ github.sha }}" != "$(gh api repos/${{ github.repository }}/commits/master --jq '.sha')" ]; then
+          if [ "${{ github.sha }}" != "$LATEST_COMMIT" ]; then
             echo "The commit hash is not the latest"
             exit 1
           fi
