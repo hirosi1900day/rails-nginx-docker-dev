@@ -12,27 +12,35 @@ on:
 jobs:
   check-latest-commit:
     runs-on: ubuntu-22.04
+    outputs:
+      value: ${{ steps.check-latest-commit.outputs.value }}
     steps:
       - name: Compare Commits
+        id: check-latest-commit
         run: |
           if [ "${{ inputs.latest_check }}" == "false" ]; then
             echo "not check latest commit"
+            echo "value=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           echo "CURRENT_COMMIT=${{ github.sha }}"
-          LATEST_COMMIT=hoge
+          LATEST_COMMIT=$(gh api repos/${{ github.repository }}/commits/master --jq '.sha')
           echo "LATEST_COMMIT=$LATEST_COMMIT"
 
           # 古いcommitの場合はエラーを返す
           if [ "${{ github.sha }}" != "$LATEST_COMMIT" ]; then
             echo "The commit hash is not the latest"
-            exit 1
+            echo "value=false" >> "$GITHUB_OUTPUT"
+          elsif
+            echo "The commit hash is the latest"
+            echo "value=true" >> "$GITHUB_OUTPUT"
           fi
         env:
           GH_TOKEN: ${{ github.token }}
 
   test-job:
     needs: check-latest-commit
+    if: needs.check-latest-commit.outputs.value == 'true'
     runs-on: ubuntu-latest
     steps:
       - run: echo "Running job-1"
