@@ -9,9 +9,10 @@ on:
         type: boolean
         default: false
     outputs:
-      deployed:
-        description: "The first output string"
+      deploy_executed:
+        description: "Whether the deploy was executed (true) or skipped (false)"
         value: ${{ jobs.check-latest-commit.outputs.value }}
+
 
 jobs:
   check-latest-commit:
