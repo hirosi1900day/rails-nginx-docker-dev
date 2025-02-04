@@ -11,5 +11,13 @@ jobs:
     uses: ./.github/workflows/_test.yml
     with:
       latest_check: true
+
+  test:
+    needs: [call-workflow, call-workflow2]
+    if: ${{ needs.call-workflow.outputs.deployed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Running job-1"
+      - run: sleep 1  # 長時間実行するジョブをシミュレーション
      
 

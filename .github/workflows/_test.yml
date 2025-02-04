@@ -8,6 +8,10 @@ on:
         required: false
         type: boolean
         default: false
+    outputs:
+      deployed:
+        description: "The first output string"
+        value: ${{ jobs.check-latest-commit.outputs.value }}
 
 jobs:
   check-latest-commit:
@@ -24,7 +28,7 @@ jobs:
             exit 0
           fi
           echo "CURRENT_COMMIT=${{ github.sha }}"
-          LATEST_COMMIT=hoge
+          LATEST_COMMIT=$(gh api repos/${{ github.repository }}/commits/master --jq '.sha')
           echo "LATEST_COMMIT=$LATEST_COMMIT"
 
 
