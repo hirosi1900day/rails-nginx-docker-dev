@@ -16,7 +16,7 @@ jobs:
 
   test:
     needs: [call-workflow, call-workflow2]
-    if: ${{ (success() && needs.call-workflow.outputs.deploy_executed == 'true') || failure() }}
+    if: ${{ failure() || (success() && needs.call-workflow.outputs.deploy_executed == 'true') }}
     runs-on: ubuntu-latest
     steps:
       - run: echo "Running job-1"
