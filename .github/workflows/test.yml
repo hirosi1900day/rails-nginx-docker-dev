@@ -8,7 +8,7 @@ jobs:
     uses: ./.github/workflows/_test.yml
 
   call-workflow2: 
-    uses: ./.github/workflows/_test.yml
+    uses: ./.github/workflows/_test2.yml
     with:
       latest_check: true
 

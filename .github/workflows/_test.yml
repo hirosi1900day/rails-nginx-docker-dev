@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Running job-1"
-      - run: sleep 1  # 長時間実行するジョブをシミュレーション
+      - run: exit 1  # 長時間実行するジョブをシミュレーション
 
 
 
