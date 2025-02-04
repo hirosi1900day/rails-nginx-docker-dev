@@ -10,10 +10,12 @@ jobs:
       group: test
       cancel-in-progress: true
 
-  job3:
-    needs: call-workflow
-    uses: ./.github/workflows/_test2.yml
+  call-workflow2: 
+    uses: ./.github/workflows/_test.yml
+    with:
+      latest_check: true
     concurrency:
-      group: test2
-      cancel-in-progress: false
+      group: test
+      cancel-in-progress: true
+     
 

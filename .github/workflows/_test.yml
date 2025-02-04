@@ -2,9 +2,39 @@ name: Called Workflow
 
 on:
   workflow_call:
+    inputs:
+      latest_check:
+        description: 'Check if the latest commit'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
-  job-1:
+  check-latest-commit:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Skip Check if latest_check is false
+        if: ${{ inputs.latest_check == false }}
+        run: |
+          echo "Skipping latest commit check."
+          exit 0
+
+      - name: Compare Commits
+        run: |
+          echo "CURRENT_COMMIT=${{ github.sha }}"
+          LATEST_COMMIT=$(gh api repos/${{ github.repository }}/commits/master --jq '.sha')
+          echo "LATEST_COMMIT=$LATEST_COMMIT"
+
+          # 古いcommitの場合はエラーを返す
+          if [ "${{ github.sha }}" != "$LATEST_COMMIT" ]; then
+            echo "The commit hash is not the latest"
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  test-job:
+    needs: check-latest-commit
     runs-on: ubuntu-latest
     steps:
       - run: echo "Running job-1"
