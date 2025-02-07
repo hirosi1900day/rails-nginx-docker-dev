@@ -8,6 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Running job-1"
-      - run: sleep 3  # 長時間実行するジョブをシミュレーション
+      - run: sleep 60  # 長時間実行するジョブをシミュレーション
 
   
