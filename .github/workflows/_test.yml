@@ -47,7 +47,6 @@ jobs:
 
   test-job:
     needs: check-latest-commit
-    if: needs.check-latest-commit.outputs.value == 'true'
     uses: ./.github/workflows/_test2.yml
 
 
