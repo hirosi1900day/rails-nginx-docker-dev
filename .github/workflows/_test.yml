@@ -48,10 +48,7 @@ jobs:
   test-job:
     needs: check-latest-commit
     if: needs.check-latest-commit.outputs.value == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Running job-1"
-      - run: exit 0  # 長時間実行するジョブをシミュレーション
+    uses: ./.github/workflows/_test2.yml
 
 
 

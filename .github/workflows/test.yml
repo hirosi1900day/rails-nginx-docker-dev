@@ -5,6 +5,9 @@ on:
 
 jobs:
   call-workflow: 
+    concurrency:
+      group: deploy_prod_deploy
+      cancel-in-progress: false
     uses: ./.github/workflows/_test.yml
     with:
       latest_check: true
